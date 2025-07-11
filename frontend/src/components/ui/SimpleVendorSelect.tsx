@@ -24,13 +24,11 @@ export function SimpleVendorSelect({
   React.useEffect(() => {
     async function fetchVendors() {
       try {
-        console.log("🔄 SimpleVendorSelect: Fetching vendors...");
         const res = await fetch("http://192.168.29.167:8000/vendors");
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
         }
         const data = await res.json();
-        console.log("✅ SimpleVendorSelect: Vendors fetched:", data?.length || 0);
         setVendors(data || []);
       } catch (error) {
         console.error("❌ SimpleVendorSelect: Failed to fetch vendors:", error);
@@ -44,7 +42,6 @@ export function SimpleVendorSelect({
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = parseInt(e.target.value);
-    console.log("🎯 SimpleVendorSelect: Vendor selected:", value);
     if (!isNaN(value)) {
       onSelect(value);
     }

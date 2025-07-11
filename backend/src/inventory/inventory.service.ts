@@ -58,8 +58,8 @@ export class InventoryService {
 
     return serials.map((serialNumber) => ({
       productId: existingProduct.id,
-      make: product.make,
-      model: product.model,
+      make: product.make || '',
+      model: product.model || '',
       inventoryId: inventory.id,
       serialNumber,
       macAddress: product.macAddress,
@@ -180,8 +180,8 @@ export class InventoryService {
 
           return serials.map((serialNumber) => ({
             productId: existingProduct.id,
-            make: product.make,
-            model: product.model,
+            make: product.make || '',
+            model: product.model || '',
             inventoryId: id,
             serialNumber,
             macAddress: product.macAddress,

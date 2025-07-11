@@ -28,13 +28,11 @@ export function SimpleSerialSelect({
   React.useEffect(() => {
     async function fetchSerialNumbers() {
       try {
-        console.log("🔄 SimpleSerialSelect: Fetching serial numbers...");
         const res = await fetch("http://192.168.29.167:8000/inventory");
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
         }
         const inventoryData = await res.json();
-        console.log("✅ SimpleSerialSelect: Inventory data fetched:", inventoryData?.length || 0);
         
         // Extract serial numbers from the nested structure
         const allSerialNumbers: SerialNumber[] = [];
@@ -53,7 +51,6 @@ export function SimpleSerialSelect({
           }
         });
         
-        console.log("✅ SimpleSerialSelect: Serial numbers extracted:", allSerialNumbers.length);
         setSerialNumbers(allSerialNumbers);
       } catch (error) {
         console.error("❌ SimpleSerialSelect: Failed to fetch serial numbers:", error);
@@ -67,7 +64,6 @@ export function SimpleSerialSelect({
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedSerial = e.target.value;
-    console.log("🎯 SimpleSerialSelect: Serial number selected:", selectedSerial);
     
     if (selectedSerial) {
       const item = serialNumbers.find(s => s.serialNumber === selectedSerial);

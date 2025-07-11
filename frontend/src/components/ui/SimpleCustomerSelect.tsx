@@ -24,13 +24,11 @@ export function SimpleCustomerSelect({
   React.useEffect(() => {
     async function fetchCustomers() {
       try {
-        console.log("🔄 SimpleCustomerSelect: Fetching customers...");
         const res = await fetch("http://192.168.29.167:8000/customers");
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
         }
         const data = await res.json();
-        console.log("✅ SimpleCustomerSelect: Customers fetched:", data?.length || 0);
         setCustomers(data || []);
       } catch (error) {
         console.error("❌ SimpleCustomerSelect: Failed to fetch customers:", error);
@@ -44,7 +42,6 @@ export function SimpleCustomerSelect({
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = parseInt(e.target.value);
-    console.log("🎯 SimpleCustomerSelect: Customer selected:", value);
     if (!isNaN(value)) {
       onSelect(value);
     }

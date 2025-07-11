@@ -44,9 +44,9 @@ export class VendorController {
         ...vendorData
       } = body;
   
-      const parsedContacts = JSON.parse(contacts || '[]');
-      const parsedBankDetails = JSON.parse(bankDetails || '[]');
-      const parsedProducts = JSON.parse(products || '[]');
+      const parsedContacts = typeof contacts === 'string' ? JSON.parse(contacts || '[]') : contacts || [];
+      const parsedBankDetails = typeof bankDetails === 'string' ? JSON.parse(bankDetails || '[]') : bankDetails || [];
+      const parsedProducts = typeof products === 'string' ? JSON.parse(products || '[]') : products || [];
   
       if (file) {
         vendorData.gstpdf = file.filename;
@@ -119,9 +119,9 @@ async update(
       ...vendorData
     } = body;
 
-    const parsedContacts = JSON.parse(contacts || '[]');
-    const parsedBankDetails = JSON.parse(bankDetails || '[]');
-    const parsedProducts = JSON.parse(products || '[]');
+    const parsedContacts = typeof contacts === 'string' ? JSON.parse(contacts || '[]') : contacts || [];
+    const parsedBankDetails = typeof bankDetails === 'string' ? JSON.parse(bankDetails || '[]') : bankDetails || [];
+    const parsedProducts = typeof products === 'string' ? JSON.parse(products || '[]') : products || [];
 
     // Handle new file upload
     if (file) {

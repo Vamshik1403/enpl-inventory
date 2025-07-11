@@ -273,7 +273,7 @@ const VendorTable: React.FC = () => {
     payload.append("bankDetails", JSON.stringify(validBanks));
 
     if (gstPdfFile) {
-      payload.append("gstpdf", gstPdfFile);
+      payload.append("gstCertificate", gstPdfFile);
     }
 
     // ✅ Choose endpoint based on whether it's create or update

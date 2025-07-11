@@ -47,8 +47,6 @@ export default function MacAddressCombobox({
         const res = await fetch("http://192.168.29.167:8000/inventory");
         const data = await res.json();
 
-        console.log("Fetched inventory data:", data); // Debug fetch
-
         const flattened: MacAddress[] = data.flatMap((inv: any) =>
           Array.isArray(inv.products)
             ? inv.products.map((p: any) => ({
@@ -58,7 +56,6 @@ export default function MacAddressCombobox({
             : []
         );
 
-        console.log("Flattened MAC address list:", flattened); // Debug flattening
         setMacAddressList(flattened);
       } catch (error) {
         console.error("Failed to fetch MAC addresses:", error);

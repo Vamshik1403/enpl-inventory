@@ -4,6 +4,7 @@ import {
   IsInt,
   ValidateNested,
   IsArray,
+  IsOptional,
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 
@@ -63,8 +64,9 @@ export class CreateServiceContractDto {
   @IsString()
   contractDescription: string;
 
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateContractInventoryDto)
-  contractInventories: CreateContractInventoryDto[];
+  contractInventories?: CreateContractInventoryDto[];
 }

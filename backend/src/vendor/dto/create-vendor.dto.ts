@@ -65,9 +65,9 @@ class CreateBankDetailDto {
 
 export class CreateVendorDto {
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  vendorCode :string;
+  vendorCode?: string;
 
   @IsNotEmpty()
   @IsString()

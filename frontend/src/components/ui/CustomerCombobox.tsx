@@ -26,19 +26,14 @@ export function CustomerCombobox({
   const [searchTerm, setSearchTerm] = React.useState("");
   const [isOpen, setIsOpen] = React.useState(false);
 
-  console.log("🎛️ CustomerCombobox props:", { selectedValue, placeholder });
-
   React.useEffect(() => {
     async function fetchCustomers() {
       try {
-        console.log("🔄 Fetching customers...");
         const res = await fetch("http://192.168.29.167:8000/customers");
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
         }
         const data = await res.json();
-        console.log("✅ Customers fetched successfully:", data?.length || 0, "customers");
-        console.log("📋 First customer sample:", data?.[0]);
         setCustomers(data || []);
       } catch (error) {
         console.error("❌ Failed to fetch customers:", error);
@@ -55,8 +50,6 @@ export function CustomerCombobox({
 
   const handleSelectCustomer = (customerId: string) => {
     const id = parseInt(customerId);
-    console.log("🎯 Customer selected via Select:", id);
-    console.log("📞 Calling onSelect with ID:", id);
     onSelect(id);
     setIsOpen(false);
     setSearchTerm("");

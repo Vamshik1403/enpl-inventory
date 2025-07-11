@@ -34,8 +34,8 @@ interface ServiceContract {
   visitSite: number;
   maintenanceVisit: number;
   contractDescription: string;
-  Customer: Customer;
-  Site: Site;
+  Customer?: Customer;
+  Site?: Site;
 }
 
 export default function ServiceContractTable() {
@@ -122,8 +122,8 @@ export default function ServiceContractTable() {
 
   const filteredContracts = contracts.filter(contract =>
     contract.contractDescription.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    contract.Customer.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    contract.Site.siteName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    contract.Customer?.customerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    contract.Site?.siteName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     contract.serviceCategory.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -418,8 +418,8 @@ export default function ServiceContractTable() {
             <TableBody>
               {paginatedContracts.map((contract) => (
                 <TableRow key={contract.id}>
-                  <TableCell className="font-medium">{contract.Customer.customerName}</TableCell>
-                  <TableCell>{contract.Site.siteName}</TableCell>
+                  <TableCell className="font-medium">{contract.Customer?.customerName || 'N/A'}</TableCell>
+                  <TableCell>{contract.Site?.siteName || 'N/A'}</TableCell>
                   <TableCell>{contract.contractDescription}</TableCell>
                   <TableCell>{contract.serviceCategory}</TableCell>
                   <TableCell>{new Date(contract.startDate).toLocaleDateString()}</TableCell>

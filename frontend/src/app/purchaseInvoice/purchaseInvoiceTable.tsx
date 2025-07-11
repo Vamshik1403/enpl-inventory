@@ -287,14 +287,17 @@ const paginatedInventory = sortedInventory.slice(
       return inventoryMatch || productMatch;
     });
 
-    // ✅ Deduplicate based on purchaseInvoice
+    // ✅ Group by purchaseInvoice but preserve all inventory items
+    // Only deduplicate if there are exact duplicate records (same ID)
     const uniqueMap = new Map();
     filtered.forEach((item) => {
-      if (!uniqueMap.has(item.purchaseInvoice)) {
-        uniqueMap.set(item.purchaseInvoice, item);
+      const key = `${item.purchaseInvoice}-${item.id}`;
+      if (!uniqueMap.has(key)) {
+        uniqueMap.set(key, item);
       }
     });
 
+    console.log("Purchase Invoice filtered data:", Array.from(uniqueMap.values()));
     setFilteredInventory(Array.from(uniqueMap.values()));
   };
 
@@ -368,8 +371,37 @@ const paginatedInventory = sortedInventory.slice(
 
   const openModal = (data?: Inventory) => {
     if (data) {
+      console.log("Opening Purchase Invoice modal with data:", data);
+      console.log("Original purchaseDate:", data.purchaseDate);
+      console.log("Products data:", data.products);
+      
       const clonedProducts = (data.products || []).map((p) => ({ ...p }));
-      setFormData({ ...data, products: clonedProducts });
+      console.log("Cloned products:", clonedProducts);
+      
+      // Format the purchase date for the HTML date input (YYYY-MM-DD)
+      const formatDateForInput = (dateString: string | undefined) => {
+        if (!dateString) return '';
+        try {
+          const date = new Date(dateString);
+          // Check if date is valid
+          if (isNaN(date.getTime())) return '';
+          return date.toISOString().split('T')[0];
+        } catch (error) {
+          console.error('Error formatting date:', error);
+          return '';
+        }
+      };
+      
+      const formattedData = {
+        ...data,
+        products: clonedProducts,
+        purchaseDate: formatDateForInput(data.purchaseDate),
+        dueDate: formatDateForInput(data.dueDate)
+      };
+      
+      console.log("Formatted purchaseDate:", formattedData.purchaseDate);
+      console.log("Formatted dueDate:", formattedData.dueDate);
+      setFormData(formattedData);
     } else {
       setFormData(initialFormState);
     }
@@ -736,6 +768,7 @@ const PurchaseInvoiceForm: React.FC<{
             <SimpleMacAddressSelect
               selectedValue={product.macAddress}
               onSelect={(macAddress) => {
+                console.log("MAC Address selected:", macAddress);
                 const updated = [...formData.products];
                 updated[index].macAddress = macAddress;
                 setFormData({ ...formData, products: updated });

@@ -150,7 +150,8 @@ const InventoryTable: React.FC = () => {
 
   const fetchInventory = async () => {
     const res = await axios.get("http://192.168.29.167:8000/inventory");
-    setInventoryList(res.data.reverse());
+    console.log("Inventory: Raw inventory data:", res.data);
+    
     const inventoryWithDuration = res.data.map((item: Inventory) => {
       const purchaseDate = new Date(item.purchaseDate);
       const today = new Date();
@@ -162,7 +163,9 @@ const InventoryTable: React.FC = () => {
         duration: `${diffDays} day${diffDays !== 1 ? "s" : ""}`,
       };
     });
-    setInventoryList(inventoryWithDuration);
+    
+    console.log("Inventory: Processed inventory data:", inventoryWithDuration);
+    setInventoryList(inventoryWithDuration.reverse());
   };
 
   const fetchProducts = async () => {
@@ -281,7 +284,32 @@ const InventoryTable: React.FC = () => {
   };
 
   const handleSave = async () => {
-    // Validation loop
+    console.log("handleSave called with formData:", formData);
+    console.log("Purchase date value:", formData.purchaseDate);
+    
+    // Validation loop for basic required fields
+    if (!formData.purchaseInvoice || formData.purchaseInvoice.trim() === "") {
+      setAlertMessage("Purchase Invoice Number is required");
+      setAlertType("error");
+      setTimeout(() => setAlertMessage(""), 3000);
+      return;
+    }
+
+    if (!formData.purchaseDate || formData.purchaseDate.trim() === "") {
+      setAlertMessage("Purchase Date is required");
+      setAlertType("error");
+      setTimeout(() => setAlertMessage(""), 3000);
+      return;
+    }
+
+    if (!formData.vendorId || formData.vendorId === 0) {
+      setAlertMessage("Vendor is required");
+      setAlertType("error");
+      setTimeout(() => setAlertMessage(""), 3000);
+      return;
+    }
+
+    // Validation loop for products
     for (let i = 0; i < formData.products.length; i++) {
       const p = formData.products[i];
       const hasSerial = p.serialNumber && p.serialNumber.trim() !== "";
@@ -301,10 +329,12 @@ const InventoryTable: React.FC = () => {
     try {
       const payload = {
         ...formData,
+        // Ensure purchaseDate is properly formatted
+        purchaseDate: formData.purchaseDate,
         products: formData.products.map((product) => ({
           productId: product.productId,
-          make: product.make,
-          model: product.model,
+          make: product.make || '',
+          model: product.model || '',
           serialNumber: product.serialNumber,
           macAddress: product.macAddress,
           warrantyPeriod: product.warrantyPeriod,
@@ -312,6 +342,8 @@ const InventoryTable: React.FC = () => {
           autoGenerateSerial: product.noSerialMac, // send to backend
         })),
       };
+
+      console.log("Sending payload:", payload);
 
       if (formData.id) {
         await axios.put(`http://192.168.29.167:8000/inventory/${formData.id}`, payload);
@@ -337,8 +369,35 @@ const InventoryTable: React.FC = () => {
 
   const openModal = (data?: Inventory) => {
     if (data) {
+      console.log("Opening modal with data:", data);
+      console.log("Original purchaseDate:", data.purchaseDate);
+      
       const clonedProducts = (data.products || []).map((p) => ({ ...p }));
-      setFormData({ ...data, products: clonedProducts });
+      
+      // Format the purchase date for the HTML date input (YYYY-MM-DD)
+      const formatDateForInput = (dateString: string | undefined) => {
+        if (!dateString) return '';
+        try {
+          const date = new Date(dateString);
+          // Check if date is valid
+          if (isNaN(date.getTime())) return '';
+          return date.toISOString().split('T')[0];
+        } catch (error) {
+          console.error('Error formatting date:', error);
+          return '';
+        }
+      };
+      
+      const formattedData = {
+        ...data,
+        products: clonedProducts,
+        purchaseDate: formatDateForInput(data.purchaseDate),
+        dueDate: formatDateForInput(data.dueDate)
+      };
+      
+      console.log("Formatted purchaseDate:", formattedData.purchaseDate);
+      console.log("Formatted dueDate:", formattedData.dueDate);
+      setFormData(formattedData);
     } else {
       setFormData(initialFormState);
     }
@@ -609,13 +668,14 @@ const InventoryTable: React.FC = () => {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="purchaseDate">Purchase Invoice Date</Label>
+                        <Label htmlFor="purchaseDate">Purchase Invoice Date <span className="text-red-500">*</span></Label>
                         <Input
                           id="purchaseDate"
                           name="purchaseDate"
                           type="date"
                           value={formData.purchaseDate}
                           onChange={handleChange}
+                          className={!formData.purchaseDate || formData.purchaseDate.trim() === "" ? "border-red-300" : ""}
                         />
                       </div>
                       <div className="space-y-2">

@@ -7,7 +7,7 @@ import { UpdateServiceContractDto } from './dto/update-service-contract.dto';
 export class ServicecontractService {
       constructor(private readonly prisma: PrismaService) {}
       async create(createDto: CreateServiceContractDto) {
-        const { contractInventories, startDate, endDate, ...rest } = createDto;
+        const { contractInventories = [], startDate, endDate, ...rest } = createDto;
       
         const validStartDate = new Date(startDate);
         const validEndDate = new Date(endDate);
@@ -31,27 +31,34 @@ export class ServicecontractService {
       
         // 🧾 Final contract number
         const contractNo = `EN-CONT-${currentYear}-${sequence}`;
-      
-        // ✅ Create contract
-        return this.prisma.serviceContracts.create({
-          data: {
-            ...rest,
-            startDate: validStartDate,
-            endDate: validEndDate,
-            contractNo,
-            visitSite: String(rest.visitSite),
-            maintenanceVisit: String(rest.maintenanceVisit),
-            contractInventories: {
-              create: contractInventories.map((inv) => ({
-                ...inv,
-                dateOfPurchase: new Date(inv.dateOfPurchase),
-              })),
-            },
-          },
-          include: {
-            contractInventories: true,
-          },
-        });
+          // ✅ Create contract
+      const contractData: any = {
+        ...rest,
+        startDate: validStartDate,
+        endDate: validEndDate,
+        contractNo,
+        visitSite: String(rest.visitSite),
+        maintenanceVisit: String(rest.maintenanceVisit),
+      };
+
+      // Only add contractInventories if they exist and are not empty
+      if (contractInventories && Array.isArray(contractInventories) && contractInventories.length > 0) {
+        contractData.contractInventories = {
+          create: contractInventories.map((inv) => ({
+            ...inv,
+            dateOfPurchase: new Date(inv.dateOfPurchase),
+          })),
+        };
+      }
+
+      return this.prisma.serviceContracts.create({
+        data: contractData,
+        include: {
+          contractInventories: true,
+          Customer: true,
+          Site: true,
+        },
+      });
       }
       
     

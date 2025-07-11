@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
@@ -21,11 +21,51 @@ export class CustomerService {
       console.error('Failed to parse products:', products);
     }
 
-    try {
-      // Step 1: Create the customer first (without customerCode)
-      const createdCustomer = await this.prisma.customer.create({
+    // Check for duplicate GST number
+    const existingGstCustomer = await this.prisma.customer.findUnique({
+      where: { gstNo: customerData.gstNo },
+    });
+
+    if (existingGstCustomer) {
+      throw new BadRequestException(`Customer with GST number ${customerData.gstNo} already exists`);
+    }
+
+    // Check for duplicate email
+    const existingEmailCustomer = await this.prisma.customer.findUnique({
+      where: { emailId: customerData.emailId },
+    });
+
+    if (existingEmailCustomer) {
+      throw new BadRequestException(`Customer with email ${customerData.emailId} already exists`);
+    }
+
+    return this.prisma.$transaction(async (prisma) => {
+      // Step 1: Generate MMYY part based on current date
+      const now = new Date();
+      const mm = String(now.getMonth() + 1).padStart(2, '0'); // Month is zero-based
+      const yy = String(now.getFullYear()).slice(-2);
+      const mmYY = `${mm}${yy}`;
+
+      // Step 2: Count how many customers have already been created this month with proper prefix
+      const countForThisMonth = await prisma.customer.count({
+        where: {
+          customerCode: {
+            startsWith: `ENPL-CUS-${mmYY}-`,
+          },
+        },
+      });
+
+      // Step 3: Create the next sequence number
+      const sequenceNumber = String(countForThisMonth + 1).padStart(5, '0');
+
+      // Step 4: Final customerCode format
+      const customerCode = `ENPL-CUS-${mmYY}-${sequenceNumber}`;
+
+      // Step 5: Create the customer with the generated customerCode
+      const createdCustomer = await prisma.customer.create({
         data: {
           ...customerData,
+          customerCode,
           products: parsedProducts,
           contacts: {
             create: contacts || [],
@@ -40,42 +80,8 @@ export class CustomerService {
         },
       });
 
-      // Step 2: Generate MMYY part based on current date
-      const now = new Date();
-      const mm = String(now.getMonth() + 1).padStart(2, '0'); // Month is zero-based
-      const yy = String(now.getFullYear()).slice(-2);
-      const mmYY = `${mm}${yy}`;
-
-      // Step 3: Count how many customers have already been created this month
-      const countForThisMonth = await this.prisma.customer.count({
-        where: {
-          customerCode: {
-            startsWith: `${mmYY}-`,
-          },
-        },
-      });
-
-      // Step 4: Create the next sequence number
-      const sequenceNumber = String(countForThisMonth + 1).padStart(5, '0');
-
-      // Step 5: Final customerCode format
-      const customerCode = `ENPL-CUS-${mmYY}-${sequenceNumber}`;
-
-      // Step 6: Update the customer with the generated customerCode
-      const updatedCustomer = await this.prisma.customer.update({
-        where: { id: createdCustomer.id },
-        data: { customerCode },
-        include: {
-          contacts: true,
-          bankDetails: true,
-        },
-      });
-
-      return updatedCustomer;
-    } catch (error) {
-      console.error('Error creating customer:', error);
-      throw error;
-    }
+      return createdCustomer;
+    });
   }
 
     // Count total number of customers

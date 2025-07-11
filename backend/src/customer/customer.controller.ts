@@ -52,13 +52,37 @@ export class CustomerController {
         customerData.gstpdf = file.filename;
       }
 
-      return this.customerService.create({
+      return await this.customerService.create({
         ...customerData,
         contacts: parsedContacts,
         bankDetails: parsedBankDetails,
       });
     } catch (error) {
-      console.error('Error parsing customer form data:', error);
+      console.error('Error creating customer:', error);
+      
+      // Handle specific constraint errors
+      if (error.message && error.message.includes('GST number')) {
+        throw new BadRequestException(error.message);
+      }
+      
+      if (error.message && error.message.includes('email')) {
+        throw new BadRequestException(error.message);
+      }
+      
+      // Handle Prisma constraint errors
+      if (error.code === 'P2002') {
+        const field = error.meta?.target?.[0];
+        if (field === 'gstNo') {
+          throw new BadRequestException('A customer with this GST number already exists');
+        }
+        if (field === 'emailId') {
+          throw new BadRequestException('A customer with this email address already exists');
+        }
+        if (field === 'customerCode') {
+          throw new BadRequestException('Customer code generation failed. Please try again.');
+        }
+      }
+      
       throw new BadRequestException('Invalid customer data');
     }
   }

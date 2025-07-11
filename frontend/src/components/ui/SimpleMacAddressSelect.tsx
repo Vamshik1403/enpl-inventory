@@ -28,13 +28,11 @@ export function SimpleMacAddressSelect({
   React.useEffect(() => {
     async function fetchMacAddresses() {
       try {
-        console.log("🔄 SimpleMacAddressSelect: Fetching MAC addresses...");
         const res = await fetch("http://192.168.29.167:8000/inventory");
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
         }
         const inventoryData = await res.json();
-        console.log("✅ SimpleMacAddressSelect: Inventory data fetched:", inventoryData?.length || 0);
         
         // Extract MAC addresses from the nested structure
         const allMacAddresses: MacAddress[] = [];
@@ -53,7 +51,6 @@ export function SimpleMacAddressSelect({
           }
         });
         
-        console.log("✅ SimpleMacAddressSelect: MAC addresses extracted:", allMacAddresses.length);
         setMacAddresses(allMacAddresses);
       } catch (error) {
         console.error("❌ SimpleMacAddressSelect: Failed to fetch MAC addresses:", error);
@@ -67,7 +64,6 @@ export function SimpleMacAddressSelect({
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedMac = e.target.value;
-    console.log("🎯 SimpleMacAddressSelect: MAC address selected:", selectedMac);
     
     if (selectedMac) {
       const item = macAddresses.find(m => m.macAddress === selectedMac);

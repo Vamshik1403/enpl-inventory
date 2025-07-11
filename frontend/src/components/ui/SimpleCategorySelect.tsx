@@ -25,13 +25,11 @@ export function SimpleCategorySelect({
   React.useEffect(() => {
     async function fetchCategories() {
       try {
-        console.log("🔄 SimpleCategorySelect: Fetching categories...");
         const res = await fetch("http://192.168.29.167:8000/category");
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
         }
         const data = await res.json();
-        console.log("✅ SimpleCategorySelect: Categories fetched:", data?.length || 0);
         setCategories(data || []);
       } catch (error) {
         console.error("❌ SimpleCategorySelect: Failed to fetch categories:", error);
@@ -45,7 +43,6 @@ export function SimpleCategorySelect({
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = parseInt(e.target.value);
-    console.log("🎯 SimpleCategorySelect: Category selected:", value);
     if (!isNaN(value)) {
       const selectedCategory = categories.find(cat => cat.id === value);
       onSelect(value, selectedCategory?.subCategories);

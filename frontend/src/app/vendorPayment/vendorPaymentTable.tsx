@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
 import { PencilLine, Trash, Download, Search, ChevronUp, ChevronDown } from "lucide-react";
 import { SimpleVendorSelect } from "@/components/ui/SimpleVendorSelect";
@@ -34,6 +34,21 @@ interface VendorPayment {
   updatedAt?: string;
 }
 
+// Function to format date for HTML date input (YYYY-MM-DD)
+const formatDateForInput = (dateString: string): string => {
+  if (!dateString) return new Date().toISOString().split('T')[0];
+  
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return new Date().toISOString().split('T')[0];
+    }
+    return date.toISOString().split('T')[0];
+  } catch (error) {
+    return new Date().toISOString().split('T')[0];
+  }
+};
+
 const initialFormState: VendorPayment = {
   vendorId: 0,
   purchaseInvoiceNo: "",
@@ -44,7 +59,7 @@ const initialFormState: VendorPayment = {
   paymentType: "",
   referenceNo: "",
   remark: "",
-  paymentDate: "",
+  paymentDate: new Date().toISOString().split('T')[0], // Set today's date as default
   createdAt: "",
   updatedAt: "",
 };
@@ -190,22 +205,61 @@ const VendorPaymentTable: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+    
+    // Prevent unnecessary re-renders by only updating if value actually changed
+    setFormData((prev) => {
+      if (prev[name as keyof VendorPayment] === value) {
+        return prev; // Return same object if no change
+      }
 
-    // If the field being updated is 'paidAmount', calculate balanceDue
-    if (name === "paidAmount") {
+      // If the field being updated is 'paidAmount', calculate balanceDue
+      if (name === "paidAmount") {
+        const paid = parseFloat(value || "0");
+        const due = parseFloat(prev.dueAmount || "0");
+        const balance = due - paid;
+
+        return {
+          ...prev,
+          paidAmount: value,
+          balanceDue: balance.toFixed(2),
+        };
+      } else {
+        return { ...prev, [name]: value };
+      }
+    });
+  };
+
+  // Separate handlers for the problematic input fields using useCallback to prevent re-renders
+  const handlePaidAmountChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setFormData((prev) => {
       const paid = parseFloat(value || "0");
-      const due = parseFloat(formData.dueAmount || "0");
+      const due = parseFloat(prev.dueAmount || "0");
       const balance = due - paid;
 
-      setFormData((prev) => ({
+      return {
         ...prev,
         paidAmount: value,
         balanceDue: balance.toFixed(2),
-      }));
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
-    }
-  };
+      };
+    });
+  }, []);
+
+  const handleReferenceChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setFormData((prev) => ({
+      ...prev,
+      referenceNo: value,
+    }));
+  }, []);
+
+  const handleRemarkChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setFormData((prev) => ({
+      ...prev,
+      remark: value,
+    }));
+  }, []);
 
   const handleSave = async () => {
     try {
@@ -254,13 +308,19 @@ const VendorPaymentTable: React.FC = () => {
   };
 
   const openModal = (data?: VendorPayment) => {
-    if (data) setFormData(data);
-    else setFormData(initialFormState);
+    if (data) {
+      setFormData({
+        ...data,
+        paymentDate: formatDateForInput(data.paymentDate)
+      });
+    } else {
+      setFormData(initialFormState);
+    }
     setIsModalOpen(true);
   };
 
-  // VendorPaymentForm component
-  const VendorPaymentForm = () => (
+  // VendorPaymentForm component with React.memo to prevent unnecessary re-renders
+  const VendorPaymentForm = useMemo(() => (
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
@@ -427,8 +487,11 @@ const VendorPaymentTable: React.FC = () => {
           <Input
             id="paidAmount"
             name="paidAmount"
+            type="text"
             value={formData.paidAmount}
-            onChange={handleChange}
+            onChange={handlePaidAmountChange}
+            placeholder="Enter paid amount"
+            autoComplete="off"
           />
         </div>
 
@@ -437,8 +500,11 @@ const VendorPaymentTable: React.FC = () => {
           <Input
             id="referenceNo"
             name="referenceNo"
+            type="text"
             value={formData.referenceNo}
-            onChange={handleChange}
+            onChange={handleReferenceChange}
+            placeholder="Enter reference number"
+            autoComplete="off"
           />
         </div>
 
@@ -458,8 +524,11 @@ const VendorPaymentTable: React.FC = () => {
           <Input
             id="remark"
             name="remark"
+            type="text"
             value={formData.remark}
-            onChange={handleChange}
+            onChange={handleRemarkChange}
+            placeholder="Enter remarks"
+            autoComplete="off"
           />
         </div>
       </div>
@@ -481,7 +550,7 @@ const VendorPaymentTable: React.FC = () => {
         </Button>
       </div>
     </div>
-  );
+  ), [formData, vendorInvoices, handlePaidAmountChange, handleReferenceChange, handleRemarkChange, handleChange, handleSave, setIsModalOpen, payments]);
 
   return (
     <div className="flex-1 p-6 bg-gray-50 min-h-screen">
@@ -508,7 +577,7 @@ const VendorPaymentTable: React.FC = () => {
                     {formData.id ? "Edit Payment" : "Add Payment"}
                   </DialogTitle>
                 </DialogHeader>
-                <VendorPaymentForm />
+                {VendorPaymentForm}
               </DialogContent>
             </Dialog>
 

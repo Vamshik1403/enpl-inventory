@@ -25,13 +25,11 @@ export function SimpleProductSelect({
   React.useEffect(() => {
     async function fetchProducts() {
       try {
-        console.log("🔄 SimpleProductSelect: Fetching products...");
         const res = await fetch("http://192.168.29.167:8000/products");
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
         }
         const data = await res.json();
-        console.log("✅ SimpleProductSelect: Products fetched:", data?.length || 0);
         setProducts(data || []);
       } catch (error) {
         console.error("❌ SimpleProductSelect: Failed to fetch products:", error);
@@ -45,7 +43,6 @@ export function SimpleProductSelect({
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = parseInt(e.target.value);
-    console.log("🎯 SimpleProductSelect: Product selected:", value);
     if (!isNaN(value)) {
       onSelect(value);
     }
