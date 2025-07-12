@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Combobox } from "@/components/ui/combobox";
 
 type MacAddress = {
   id: number;
@@ -62,9 +63,7 @@ export function SimpleMacAddressSelect({
     fetchMacAddresses();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedMac = e.target.value;
-    
+  const handleChange = (selectedMac: string) => {
     if (selectedMac) {
       const item = macAddresses.find(m => m.macAddress === selectedMac);
       if (item) {
@@ -77,24 +76,25 @@ export function SimpleMacAddressSelect({
 
   if (loading) {
     return (
-      <select disabled className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">
-        <option>Loading MAC addresses...</option>
-      </select>
+      <Combobox
+        options={[]}
+        value=""
+        onChange={() => {}}
+        placeholder="Loading MAC addresses..."
+        disabled={true}
+      />
     );
   }
 
   return (
-    <select
+    <Combobox
+      options={macAddresses.map(item => ({
+        label: `${item.macAddress}${item.product?.productName ? ` - ${item.product.productName}` : ''}`,
+        value: item.macAddress
+      }))}
       value={selectedValue || ""}
       onChange={handleChange}
-      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-    >
-      <option value="">{placeholder}</option>
-      {macAddresses.map((item) => (
-        <option key={item.id} value={item.macAddress}>
-          {item.macAddress} {item.product?.productName ? `- ${item.product.productName}` : ''}
-        </option>
-      ))}
-    </select>
+      placeholder={placeholder}
+    />
   );
 }

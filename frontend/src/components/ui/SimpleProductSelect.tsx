@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Combobox } from "@/components/ui/combobox";
 
 type Product = {
   id: number;
@@ -41,33 +42,34 @@ export function SimpleProductSelect({
     fetchProducts();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = parseInt(e.target.value);
-    if (!isNaN(value)) {
-      onSelect(value);
+  const handleChange = (value: string) => {
+    const numValue = parseInt(value);
+    if (!isNaN(numValue)) {
+      onSelect(numValue);
     }
   };
 
   if (loading) {
     return (
-      <select disabled className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">
-        <option>Loading products...</option>
-      </select>
+      <Combobox
+        options={[]}
+        value=""
+        onChange={() => {}}
+        placeholder="Loading products..."
+        disabled={true}
+      />
     );
   }
 
   return (
-    <select
-      value={selectedValue || ""}
+    <Combobox
+      options={products.map(product => ({
+        label: product.productName,
+        value: product.id.toString()
+      }))}
+      value={selectedValue ? selectedValue.toString() : ""}
       onChange={handleChange}
-      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-    >
-      <option value="">{placeholder}</option>
-      {products.map((product) => (
-        <option key={product.id} value={product.id}>
-          {product.productName}
-        </option>
-      ))}
-    </select>
+      placeholder={placeholder}
+    />
   );
 }

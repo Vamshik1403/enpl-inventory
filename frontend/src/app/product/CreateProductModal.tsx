@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { SimpleCategorySelect } from "@/components/ui/SimpleCategorySelect";
+import { Combobox } from "@/components/ui/combobox";
 
 interface CreateProductModalProps {
   show: boolean;
@@ -155,19 +156,15 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
           <label className="text-sm font-medium text-gray-700">
                 Subcategory
               </label>
-              <select
-                className="p-3 border border-gray-300 rounded-md mt-1"
+              <Combobox
+                options={subCategories.map(subCategory => ({
+                  label: subCategory.subCategoryName,
+                  value: subCategory.id.toString()
+                }))}
                 value={subCategoryId}
-                onChange={handleSubCategoryChange}
-                required
-              >
-                <option value="">Select Subcategory</option>
-                {subCategories.map((subCategory) => (
-                  <option key={subCategory.id} value={subCategory.id}>
-                    {subCategory.subCategoryName}
-                  </option>
-                ))}
-              </select>
+                onChange={(value) => setSubCategoryId(value)}
+                placeholder="Select Subcategory"
+              />
             </div>
           
             <div className="flex flex-col">

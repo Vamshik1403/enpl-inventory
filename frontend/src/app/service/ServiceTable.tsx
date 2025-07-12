@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Combobox } from "@/components/ui/combobox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -296,37 +297,28 @@ export default function ServiceTable() {
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="serviceCategoryId">Category</Label>
-                <Select value={formData.serviceCategoryId.toString()} onValueChange={handleCategoryChange}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map((category) => (
-                      <SelectItem key={category.id} value={category.id.toString()}>
-                        {category.categoryName}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  options={categories.map(category => ({
+                    label: category.categoryName,
+                    value: category.id.toString()
+                  }))}
+                  value={formData.serviceCategoryId.toString()}
+                  onChange={handleCategoryChange}
+                  placeholder="Select category"
+                />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="serviceSubCategoryId">Subcategory</Label>
-                <Select 
-                  value={formData.serviceSubCategoryId.toString()} 
-                  onValueChange={handleSubcategoryChange}
+                <Combobox
+                  options={getAvailableSubcategories(formData.serviceCategoryId).map(subcategory => ({
+                    label: subcategory.subCategoryName,
+                    value: subcategory.id.toString()
+                  }))}
+                  value={formData.serviceSubCategoryId.toString()}
+                  onChange={handleSubcategoryChange}
+                  placeholder="Select subcategory"
                   disabled={!formData.serviceCategoryId}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select subcategory" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getAvailableSubcategories(formData.serviceCategoryId).map((subcategory) => (
-                      <SelectItem key={subcategory.id} value={subcategory.id.toString()}>
-                        {subcategory.subCategoryName}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                />
               </div>
             </div>
             <DialogFooter>
@@ -513,37 +505,28 @@ export default function ServiceTable() {
             </div>
             <div className="grid gap-2">
               <Label htmlFor="edit-serviceCategoryId">Category</Label>
-              <Select value={formData.serviceCategoryId.toString()} onValueChange={handleCategoryChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id.toString()}>
-                      {category.categoryName}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                options={categories.map(category => ({
+                  label: category.categoryName,
+                  value: category.id.toString()
+                }))}
+                value={formData.serviceCategoryId.toString()}
+                onChange={handleCategoryChange}
+                placeholder="Select category"
+              />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="edit-serviceSubCategoryId">Subcategory</Label>
-              <Select 
-                value={formData.serviceSubCategoryId.toString()} 
-                onValueChange={handleSubcategoryChange}
+              <Combobox
+                options={getAvailableSubcategories(formData.serviceCategoryId).map(subcategory => ({
+                  label: subcategory.subCategoryName,
+                  value: subcategory.id.toString()
+                }))}
+                value={formData.serviceSubCategoryId.toString()}
+                onChange={handleSubcategoryChange}
+                placeholder="Select subcategory"
                 disabled={!formData.serviceCategoryId}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select subcategory" />
-                </SelectTrigger>
-                <SelectContent>
-                  {getAvailableSubcategories(formData.serviceCategoryId).map((subcategory) => (
-                    <SelectItem key={subcategory.id} value={subcategory.id.toString()}>
-                      {subcategory.subCategoryName}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              />
             </div>
           </div>
           <DialogFooter>

@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Combobox } from "@/components/ui/combobox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -313,25 +313,20 @@ const SiteTable: React.FC = () => {
                     <div className="space-y-4 mt-6">
                       <div className="space-y-2">
                         <Label className="text-sm font-medium text-gray-700">Customer</Label>
-                        <Select
+                        <Combobox
+                          options={customers.map((customer) => ({
+                            label: customer.customerName,
+                            value: customer.id.toString(),
+                          }))}
                           value={formData.customerId ? formData.customerId.toString() : ""}
-                          onValueChange={(value) =>
+                          onChange={(value) =>
                             handleInputChange({
                               target: { name: "customerId", value }
                             } as React.ChangeEvent<HTMLSelectElement>)
                           }
-                        >
-                          <SelectTrigger className="border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                            <SelectValue placeholder="Select Customer" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {customers.map((customer) => (
-                              <SelectItem key={customer.id} value={customer.id.toString()}>
-                                {customer.customerName}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                          placeholder="Select Customer"
+                          className="w-full"
+                        />
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -526,7 +521,7 @@ const SiteTable: React.FC = () => {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gray-50 hover:bg-gray-50">
-                    <TableHead className="px-6 py-4 font-semibold text-gray-700 text-left">Site Code</TableHead>
+                    <TableHead className="px-6 py-4 font-semibold text-gray-700 text-left min-w-[200px]">Site Code</TableHead>
                     <TableHead className="px-6 py-4 font-semibold text-gray-700 text-left">Customer Name</TableHead>
                     <TableHead className="px-6 py-4 font-semibold text-gray-700 text-left">Site Name</TableHead>
                     <TableHead className="px-6 py-4 font-semibold text-gray-700 text-left">Site Address</TableHead>
@@ -546,7 +541,7 @@ const SiteTable: React.FC = () => {
                       key={site.id}
                       className="hover:bg-gray-50 transition-colors"
                     >
-                      <TableCell className="px-6 py-4 font-medium text-gray-900">{site.siteCode}</TableCell>
+                      <TableCell className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap min-w-[200px]">{site.siteCode}</TableCell>
                       <TableCell className="px-6 py-4 text-gray-700">{site.Customer.customerName}</TableCell>
                       <TableCell className="px-6 py-4 text-gray-700">{site.siteName}</TableCell>
                       <TableCell className="px-6 py-4 text-gray-700">{site.siteAddress}</TableCell>
@@ -664,25 +659,20 @@ const SiteTable: React.FC = () => {
             <div className="space-y-4 mt-6">
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-gray-700">Customer</Label>
-                <Select
+                <Combobox
+                  options={customers.map((customer) => ({
+                    label: customer.customerName,
+                    value: customer.id.toString(),
+                  }))}
                   value={formData.customerId ? formData.customerId.toString() : ""}
-                  onValueChange={(value) =>
+                  onChange={(value) =>
                     handleInputChange({
                       target: { name: "customerId", value }
                     } as React.ChangeEvent<HTMLSelectElement>)
                   }
-                >
-                  <SelectTrigger className="border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                    <SelectValue placeholder="Select Customer" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {customers.map((customer) => (
-                      <SelectItem key={customer.id} value={customer.id.toString()}>
-                        {customer.customerName}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  placeholder="Select Customer"
+                  className="w-full"
+                />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

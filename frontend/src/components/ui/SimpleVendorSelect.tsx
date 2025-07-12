@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Combobox } from "@/components/ui/combobox";
 
 type Vendor = {
   id: number;
@@ -40,26 +41,23 @@ export function SimpleVendorSelect({
     fetchVendors();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = parseInt(e.target.value);
-    if (!isNaN(value)) {
-      onSelect(value);
+  const handleChange = (value: string) => {
+    const numValue = parseInt(value);
+    if (!isNaN(numValue)) {
+      onSelect(numValue);
     }
   };
 
   return (
-    <select
-      value={selectedValue && selectedValue > 0 ? selectedValue : ""}
+    <Combobox
+      options={vendors.map(vendor => ({
+        label: vendor.vendorName,
+        value: vendor.id.toString()
+      }))}
+      value={selectedValue && selectedValue > 0 ? selectedValue.toString() : ""}
       onChange={handleChange}
-      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+      placeholder={loading ? "Loading vendors..." : placeholder}
       disabled={loading}
-    >
-      <option value="">{loading ? "Loading vendors..." : placeholder}</option>
-      {vendors.map((vendor) => (
-        <option key={vendor.id} value={vendor.id}>
-          {vendor.vendorName}
-        </option>
-      ))}
-    </select>
+    />
   );
 }

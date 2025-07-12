@@ -26,6 +26,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Combobox } from "@/components/ui/combobox";
 
 interface SubCategory {
   id: number;
@@ -478,9 +479,13 @@ const SubCategoryTable: React.FC = () => {
                 <div className="space-y-4 py-4">
                   <div className="space-y-2">
                     <Label>Category</Label>
-                    <Select
+                    <Combobox
+                      options={categories.map(category => ({
+                        label: category.categoryName,
+                        value: category.id.toString()
+                      }))}
                       value={formData.categoryId ? formData.categoryId.toString() : ""}
-                      onValueChange={(value) => {
+                      onChange={(value) => {
                         const selectedCategoryId = parseInt(value);
                         const selectedCategory = categories.find(
                           (c) => c.id === selectedCategoryId
@@ -494,18 +499,8 @@ const SubCategoryTable: React.FC = () => {
                           subCategoryId: "",
                         }));
                       }}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories.map((category) => (
-                          <SelectItem key={category.id} value={category.id.toString()}>
-                            {category.categoryName}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      placeholder="Select Category"
+                    />
                   </div>
 
                   <div className="space-y-2">

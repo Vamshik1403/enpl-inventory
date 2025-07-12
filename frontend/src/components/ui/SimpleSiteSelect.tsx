@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Combobox } from "@/components/ui/combobox";
 
 type Site = {
   id: number;
@@ -43,18 +44,22 @@ export function SimpleSiteSelect({
     fetchSites();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = parseInt(e.target.value);
-    if (!isNaN(value)) {
-      onSelect(value);
+  const handleChange = (value: string) => {
+    const numValue = parseInt(value);
+    if (!isNaN(numValue)) {
+      onSelect(numValue);
     }
   };
 
   if (loading) {
     return (
-      <select disabled className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">
-        <option>Loading sites...</option>
-      </select>
+      <Combobox
+        options={[]}
+        value=""
+        onChange={() => {}}
+        placeholder="Loading sites..."
+        disabled={true}
+      />
     );
   }
 
@@ -64,17 +69,14 @@ export function SimpleSiteSelect({
     : sites;
 
   return (
-    <select
-      value={selectedValue || ""}
+    <Combobox
+      options={filteredSites.map(site => ({
+        label: site.siteName,
+        value: site.id.toString()
+      }))}
+      value={selectedValue ? selectedValue.toString() : ""}
       onChange={handleChange}
-      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-    >
-      <option value="">{placeholder}</option>
-      {filteredSites.map((site) => (
-        <option key={site.id} value={site.id}>
-          {site.siteName}
-        </option>
-      ))}
-    </select>
+      placeholder={placeholder}
+    />
   );
 }

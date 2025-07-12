@@ -210,12 +210,20 @@ export default function ServiceContractTable() {
 
   const openEditModal = (contract: ServiceContract) => {
     setSelectedContract(contract);
+    
+    // Format dates to YYYY-MM-DD format for HTML date inputs
+    const formatDateForInput = (dateString: string) => {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      return date.toISOString().split('T')[0];
+    };
+    
     setFormData({
       customerId: contract.customerId,
       siteId: contract.siteId,
       relmanager: contract.relmanager,
-      startDate: contract.startDate,
-      endDate: contract.endDate,
+      startDate: formatDateForInput(contract.startDate),
+      endDate: formatDateForInput(contract.endDate),
       serviceCategory: contract.serviceCategory,
       visitSite: contract.visitSite,
       maintenanceVisit: contract.maintenanceVisit,

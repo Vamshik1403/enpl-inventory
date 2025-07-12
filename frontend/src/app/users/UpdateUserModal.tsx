@@ -234,7 +234,7 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
             </Button>
             <Button
               type="submit"
-              className="px-6 py-2 bg-blue-600 hover:bg-blue-700"
+              className="px-6 py-2 bg-blue-600 text-white hover:bg-blue-700"
             >
               Update User
             </Button>

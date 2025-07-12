@@ -5,7 +5,7 @@ import { Edit, Trash2, Plus, Search, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Combobox } from "@/components/ui/combobox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -224,18 +224,16 @@ export default function ServiceSubCategoryTable() {
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="serviceCategoryId">Category</Label>
-                <Select value={formData.serviceCategoryId.toString()} onValueChange={handleCategoryChange}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map((category) => (
-                      <SelectItem key={category.id} value={category.id.toString()}>
-                        {category.categoryName}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  options={categories.map((category) => ({
+                    label: category.categoryName,
+                    value: category.id.toString(),
+                  }))}
+                  value={formData.serviceCategoryId.toString()}
+                  onChange={handleCategoryChange}
+                  placeholder="Select category"
+                  className="w-full"
+                />
               </div>
             </div>
             <DialogFooter>
@@ -398,18 +396,16 @@ export default function ServiceSubCategoryTable() {
             </div>
             <div className="grid gap-2">
               <Label htmlFor="edit-serviceCategoryId">Category</Label>
-              <Select value={formData.serviceCategoryId.toString()} onValueChange={handleCategoryChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id.toString()}>
-                      {category.categoryName}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                options={categories.map((category) => ({
+                  label: category.categoryName,
+                  value: category.id.toString(),
+                }))}
+                value={formData.serviceCategoryId.toString()}
+                onChange={handleCategoryChange}
+                placeholder="Select category"
+                className="w-full"
+              />
             </div>
           </div>
           <DialogFooter>

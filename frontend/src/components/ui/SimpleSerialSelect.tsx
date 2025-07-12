@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Combobox } from "@/components/ui/combobox";
 
 type SerialNumber = {
   id: number;
@@ -62,9 +63,7 @@ export function SimpleSerialSelect({
     fetchSerialNumbers();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedSerial = e.target.value;
-    
+  const handleChange = (selectedSerial: string) => {
     if (selectedSerial) {
       const item = serialNumbers.find(s => s.serialNumber === selectedSerial);
       if (item) {
@@ -77,24 +76,25 @@ export function SimpleSerialSelect({
 
   if (loading) {
     return (
-      <select disabled className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">
-        <option>Loading serial numbers...</option>
-      </select>
+      <Combobox
+        options={[]}
+        value=""
+        onChange={() => {}}
+        placeholder="Loading serial numbers..."
+        disabled={true}
+      />
     );
   }
 
   return (
-    <select
+    <Combobox
+      options={serialNumbers.map(item => ({
+        label: `${item.serialNumber}${item.product?.productName ? ` - ${item.product.productName}` : ''}`,
+        value: item.serialNumber
+      }))}
       value={selectedValue || ""}
       onChange={handleChange}
-      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-    >
-      <option value="">{placeholder}</option>
-      {serialNumbers.map((item) => (
-        <option key={item.id} value={item.serialNumber}>
-          {item.serialNumber} {item.product?.productName ? `- ${item.product.productName}` : ''}
-        </option>
-      ))}
-    </select>
+      placeholder={placeholder}
+    />
   );
 }

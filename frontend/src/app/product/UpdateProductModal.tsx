@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { Combobox } from "@/components/ui/combobox";
 
 interface UpdateProductModalProps {
   show: boolean;
@@ -208,37 +209,32 @@ const UpdateProductModal: React.FC<UpdateProductModalProps> = ({
 
             <div className="flex flex-col">
               <label className="text-sm font-medium text-gray-700">Category</label>
-              <select
-                className="p-3 border border-gray-300 rounded-md mt-1"
+              <Combobox
+                options={categories.map(category => ({
+                  label: category.categoryName,
+                  value: category.id.toString()
+                }))}
                 value={categoryId}
-                onChange={handleCategoryChange}
-                required
-
-              >
-                <option value="">Select Category</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id.toString()}>
-                    {category.categoryName}
-                  </option>
-                ))}
-              </select>
+                onChange={(value) => {
+                  setCategoryId(value);
+                  fetchSubCategories(value);
+                  setSubCategoryId(""); // Reset subcategory selection
+                }}
+                placeholder="Select Category"
+              />
             </div>
 
             <div className="flex flex-col">
               <label className="text-sm font-medium text-gray-700">Subcategory</label>
-              <select
-                className="p-3 border border-gray-300 rounded-md mt-1"
+              <Combobox
+                options={subCategories.map(subCategory => ({
+                  label: subCategory.subCategoryName,
+                  value: subCategory.id.toString()
+                }))}
                 value={subCategoryId}
-                onChange={handleSubCategoryChange}
-                required
-              >
-                <option value="">Select Subcategory</option>
-                {subCategories.map((subCategory) => (
-                  <option key={subCategory.id} value={subCategory.id.toString()}>
-                    {subCategory.subCategoryName}
-                  </option>
-                ))}
-              </select>
+                onChange={(value) => setSubCategoryId(value)}
+                placeholder="Select Subcategory"
+              />
             </div>
           </div>
 

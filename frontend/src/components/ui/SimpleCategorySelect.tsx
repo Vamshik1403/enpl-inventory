@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Combobox } from "@/components/ui/combobox";
 
 type Category = {
   id: number;
@@ -41,34 +42,35 @@ export function SimpleCategorySelect({
     fetchCategories();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = parseInt(e.target.value);
-    if (!isNaN(value)) {
-      const selectedCategory = categories.find(cat => cat.id === value);
-      onSelect(value, selectedCategory?.subCategories);
+  const handleChange = (value: string) => {
+    const numValue = parseInt(value);
+    if (!isNaN(numValue)) {
+      const selectedCategory = categories.find(cat => cat.id === numValue);
+      onSelect(numValue, selectedCategory?.subCategories);
     }
   };
 
   if (loading) {
     return (
-      <select disabled className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">
-        <option>Loading categories...</option>
-      </select>
+      <Combobox
+        options={[]}
+        value=""
+        onChange={() => {}}
+        placeholder="Loading categories..."
+        disabled={true}
+      />
     );
   }
 
   return (
-    <select
-      value={selectedValue || ""}
+    <Combobox
+      options={categories.map(category => ({
+        label: category.categoryName,
+        value: category.id.toString()
+      }))}
+      value={selectedValue ? selectedValue.toString() : ""}
       onChange={handleChange}
-      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-    >
-      <option value="">{placeholder}</option>
-      {categories.map((category) => (
-        <option key={category.id} value={category.id}>
-          {category.categoryName}
-        </option>
-      ))}
-    </select>
+      placeholder={placeholder}
+    />
   );
 }
