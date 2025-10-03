@@ -71,7 +71,7 @@ const SiteTable: React.FC = () => {
 
   const fetchSites = async () => {
     try {
-      const response = await axios.get("http://192.168.29.167:8000/sites");
+      const response = await axios.get("http://localhost:8000/sites");
       setSites(response.data.reverse());
     } catch (error) {
       console.error("Error fetching sites:", error);
@@ -82,7 +82,7 @@ const SiteTable: React.FC = () => {
 
   const fetchCustomers = async () => {
     try {
-      const response = await axios.get("http://192.168.29.167:8000/customers");
+      const response = await axios.get("http://localhost:8000/customers");
       setCustomers(response.data);
     } catch (error) {
       console.error("Error fetching customers:", error);
@@ -174,7 +174,7 @@ const SiteTable: React.FC = () => {
         payload.append("gstpdf", gstPdfFile);
       }
 
-      await axios.post("http://192.168.29.167:8000/sites", payload);
+      await axios.post("http://localhost:8000/sites", payload);
       setAlertMessage("Site created successfully!");
       setAlertType("success");
       setIsCreateModalOpen(false);
@@ -216,7 +216,7 @@ const SiteTable: React.FC = () => {
         payload.append("gstpdf", gstPdfFile);
       }
 
-      await axios.put(`http://192.168.29.167:8000/sites/${currentSite.id}`, payload);
+      await axios.put(`http://localhost:8000/sites/${currentSite.id}`, payload);
       setAlertMessage("Site updated successfully!");
       setAlertType("success");
       setIsUpdateModalOpen(false);
@@ -251,7 +251,7 @@ const SiteTable: React.FC = () => {
     if (!confirm) return;
 
     try {
-      await axios.delete(`http://192.168.29.167:8000/sites/${id}`);
+      await axios.delete(`http://localhost:8000/sites/${id}`);
       setAlertMessage("Site deleted successfully!");
       setAlertType("success");
       fetchSites();
@@ -263,7 +263,7 @@ const SiteTable: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 p-6 bg-gray-50 min-h-screen">
+    <div className="flex-1 p-6 bg-white min-h-screen">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -551,7 +551,7 @@ const SiteTable: React.FC = () => {
                       <TableCell className="px-6 py-4 text-gray-700">
                         {site.gstpdf ? (
                           <a
-                            href={`http://192.168.29.167:8000/gst/${site.gstpdf}`}
+                            href={`http://localhost:8000/gst/${site.gstpdf}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-blue-600 hover:text-blue-800 underline"
@@ -580,12 +580,12 @@ const SiteTable: React.FC = () => {
                       <TableCell className="px-6 py-4">
                         <div className="flex items-center justify-center gap-2">
                           <Button
-                            variant="ghost"
                             size="sm"
+                            variant="outline"
                             onClick={() => handleEdit(site)}
-                            className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-1 h-8 w-8"
+                            className="border-yellow-300 text-yellow-600 hover:bg-yellow-50 hover:border-yellow-400 hover:text-yellow-700 transition-colors duration-200"
                           >
-                            <Edit className="h-4 w-4" />
+                            <Edit className="h-3 w-3" />
                           </Button>
                           <Button
                             variant="ghost"

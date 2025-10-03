@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -98,10 +99,10 @@ const TaskTable: React.FC = () => {
     try {
       let response;
       if (userType === "SUPERADMIN") {
-        response = await axios.get("http://192.168.29.167:8000/tasks");
+        response = await axios.get("http://localhost:8000/tasks");
       } else {
         response = await axios.get(
-          `http://192.168.29.167:8000/tasks/user/${userId}`
+          `http://localhost:8000/tasks/user/${userId}`
         );
       }
 
@@ -118,18 +119,20 @@ const TaskTable: React.FC = () => {
   const fetchDepartments = async () => {
     try {
       const response = await axios.get(
-        "http://192.168.29.167:8000/departments"
+        "http://localhost:8000/departments"
       );
+      console.log("Departments fetched:", response.data);
       setDepartments(response.data);
     } catch (error) {
       console.log("Error fetching departments:", error);
+      setDepartments([]);
     }
   };
 
   const fetchExecutives = async () => {
     try {
       const response = await axios.get(
-        "http://192.168.29.167:8000/users/executives"
+        "http://localhost:8000/users/executives"
       );
       setExecutives(response.data);
     } catch (error) {
@@ -140,7 +143,7 @@ const TaskTable: React.FC = () => {
   const fetchManagers = async () => {
     try {
       const response = await axios.get(
-        "http://192.168.29.167:8000/users/managers"
+        "http://localhost:8000/users/managers"
       );
       setManagers(response.data);
     } catch (error) {
@@ -151,7 +154,7 @@ const TaskTable: React.FC = () => {
   const fetchHodsByDepartment = async (departmentName: string) => {
     try {
       const response = await axios.get(
-        `http://192.168.29.167:8000/users/hods/${departmentName}`
+        `http://localhost:8000/users/hods/${departmentName}`
       );
       setFormHods(response.data);
     } catch (error) {
@@ -163,7 +166,7 @@ const TaskTable: React.FC = () => {
   const fetchManagersByDepartment = async (departmentName: string) => {
     try {
       const response = await axios.get(
-        `http://192.168.29.167:8000/users/manager/${departmentName}`
+        `http://localhost:8000/users/manager/${departmentName}`
       );
       setFormManagers(response.data);
     } catch (error) {
@@ -175,7 +178,7 @@ const TaskTable: React.FC = () => {
   const fetchExecutivesByDepartment = async (departmentName: string) => {
     try {
       const response = await axios.get(
-        `http://192.168.29.167:8000/users/executive/${departmentName}`
+        `http://localhost:8000/users/executive/${departmentName}`
       );
       setFormExecutive(response.data);
     } catch (error) {
@@ -186,29 +189,62 @@ const TaskTable: React.FC = () => {
 
   const fetchServicesByDepartment = async (departmentId: number) => {
     try {
+      console.log("Fetching services for department ID:", departmentId);
       const response = await axios.get(
-        `http://192.168.29.167:8000/tasks/services/${departmentId}`
+        `http://localhost:8000/tasks/services/${departmentId}`
       );
-      setFormServices(response.data);
+      console.log("Services response:", response.data);
+      
+      if (response.data && response.data.length > 0) {
+        setFormServices(response.data);
+      } else {
+        // If no department-specific services found, try fetching all services
+        console.log("No services found for department, fetching all services");
+        const allServicesResponse = await axios.get("http://localhost:8000/service");
+        console.log("All services response:", allServicesResponse.data);
+        setFormServices(allServicesResponse.data || []);
+      }
     } catch (error) {
-      console.log("Error fetching services:", error);
-      setFormServices([]);
+      console.error("Error fetching services:", error);
+      // Fallback to fetch all services if department-specific fetch fails
+      try {
+        console.log("Trying to fetch all services as fallback");
+        const allServicesResponse = await axios.get("http://localhost:8000/service");
+        console.log("Fallback services response:", allServicesResponse.data);
+        setFormServices(allServicesResponse.data || []);
+      } catch (fallbackError) {
+        console.error("Error fetching fallback services:", fallbackError);
+        setFormServices([]);
+      }
+    }
+  };
+
+  const fetchAllServices = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/service");
+      console.log("All services fetched:", response.data);
+      return response.data || [];
+    } catch (error) {
+      console.error("Error fetching all services:", error);
+      return [];
     }
   };
 
   const fetchCustomers = async () => {
     try {
-      const response = await axios.get("http://192.168.29.167:8000/customers");
+      const response = await axios.get("http://localhost:8000/customers");
+      console.log("Customers fetched:", response.data);
       setCustomers(response.data);
     } catch (error) {
       console.log("Error fetching customers:", error);
+      setCustomers([]);
     }
   };
 
   const fetchSitesByCustomer = async (customerId: number) => {
     try {
       const response = await axios.get(
-        `http://192.168.29.167:8000/sites/customer/${customerId}`
+        `http://localhost:8000/sites/customer/${customerId}`
       );
       setSites(response.data);
     } catch (error) {
@@ -219,7 +255,7 @@ const TaskTable: React.FC = () => {
 
   const handleDelete = async (id: number) => {
     try {
-      await axios.delete(`http://192.168.29.167:8000/tasks/${id}`);
+      await axios.delete(`http://localhost:8000/tasks/${id}`);
       setAlert({ type: 'success', message: 'Task deleted successfully!' });
       fetchTasks();
     } catch (error) {
@@ -230,10 +266,12 @@ const TaskTable: React.FC = () => {
 
   const fetchAllHods = async () => {
     try {
-      const response = await axios.get("http://192.168.29.167:8000/users/hods");
+      const response = await axios.get("http://localhost:8000/users/hods");
+      console.log("All HODs fetched:", response.data);
       setHods(response.data);
     } catch (error) {
       console.log("Error fetching all HODs:", error);
+      setHods([]);
     }
   };
 
@@ -255,12 +293,12 @@ const TaskTable: React.FC = () => {
 
       if (isEditing) {
         await axios.put(
-          `http://192.168.29.167:8000/tasks/${formData.id}`,
+          `http://localhost:8000/tasks/${formData.id}`,
           sanitizedData
         );
         setAlert({ type: 'success', message: 'Task updated successfully!' });
       } else {
-        await axios.post("http://192.168.29.167:8000/tasks", sanitizedData);
+        await axios.post("http://localhost:8000/tasks", sanitizedData);
         setAlert({ type: 'success', message: 'Task created successfully!' });
       }
 
@@ -272,17 +310,40 @@ const TaskTable: React.FC = () => {
     }
   };
 
-  const openModal = (task: Task | null = null) => {
+  // Function to format date for HTML input
+  const formatDateForInput = (dateString: string) => {
+    if (!dateString) return "";
+    try {
+      const date = new Date(dateString);
+      return date.toISOString().split('T')[0]; // Returns YYYY-MM-DD format
+    } catch {
+      return "";
+    }
+  };
+
+  const openModal = async (task: Task | null = null) => {
+    console.log("Opening modal...");
+    console.log("Available departments:", departments);
+    console.log("Available customers:", customers);
+    console.log("Available HODs:", hods);
+    console.log("Available managers:", managers);
+    console.log("Available executives:", executives);
+    
     setIsEditing(!!task);
 
     if (task) {
-      setFormData(task);
+      setFormData({
+        ...task,
+        proposedDate: formatDateForInput(task.proposedDate), // Format the date properly
+      });
       const departmentName =
         departments.find((dept) => dept.id === task.departmentId)
           ?.departmentName || "";
 
+      // Clear services first, then fetch new ones
+      setFormServices([]);
       if (task.departmentId) {
-        fetchServicesByDepartment(task.departmentId);
+        await fetchServicesByDepartment(task.departmentId);
       }
 
       if (departmentName) {
@@ -311,24 +372,41 @@ const TaskTable: React.FC = () => {
         site: { id: 0, siteName: "" },
         service: { id: 0, serviceName: "" },
       });
+      // Initialize with all available data for new task
+      setFormServices([]);
+      setFormHods(hods); // Use all available HODs initially
+      setFormManagers(managers); // Use all available managers initially  
+      setFormExecutive(executives); // Use all available executives initially
+      setSites([]);
+      
+      console.log("Loading all services for new task...");
+      // Load all services initially for new task
+      const allServices = await fetchAllServices();
+      console.log("Services loaded:", allServices);
+      setFormServices(allServices);
     }
 
     setIsModalOpen(true);
   };
 
-  const handleDepartmentChange = (
+  const handleDepartmentChange = async (
     departmentId: number,
     departmentName: string
   ) => {
+    console.log("Department changed:", departmentId, departmentName);
     setFormData({
       ...formData,
       departmentId,
-      serviceId: 0,
+      serviceId: 0, // Reset service when department changes
       hodId: 0,
       managerId: 0,
       executiveId: 0,
     });
-    fetchServicesByDepartment(departmentId);
+    // Clear services first, then fetch new ones
+    setFormServices([]);
+    
+    // Wait for services to be fetched
+    await fetchServicesByDepartment(departmentId);
     fetchHodsByDepartment(departmentName);
     fetchManagersByDepartment(departmentName);
     fetchExecutivesByDepartment(departmentName);
@@ -347,6 +425,7 @@ const TaskTable: React.FC = () => {
       fetchExecutives();
       fetchManagers();
       fetchAllHods();
+      fetchAllServices(); // Fetch all services initially
     }
   }, [userId]);
 
@@ -405,17 +484,285 @@ const TaskTable: React.FC = () => {
           transition={{ duration: 0.5 }}
           className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 mb-6"
         >
-          <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-            <DialogTrigger asChild>
-              <Button
-                onClick={() => openModal()}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Add Task
-              </Button>
-            </DialogTrigger>
-          </Dialog>
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogTrigger asChild>
+            <Button
+              onClick={async () => await openModal()}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add Task
+            </Button>
+          </DialogTrigger>
+          
+          <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto bg-white">
+            <DialogHeader>
+              <DialogTitle className="text-center">
+                {isEditing ? "Edit Task" : "Add Task"}
+              </DialogTitle>
+            </DialogHeader>
+
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="department">Department</Label>
+                <Select
+                  value={formData.departmentId ? formData.departmentId.toString() : ""}
+                  onValueChange={async (value) => {
+                    const departmentId = parseInt(value, 10);
+                    const departmentName =
+                      departments.find((dept) => dept.id === departmentId)
+                        ?.departmentName || "";
+                    await handleDepartmentChange(departmentId, departmentName);
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Department" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {departments.map((department) => (
+                      <SelectItem key={department.id} value={department.id.toString()}>
+                        {department.departmentName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="service">Service</Label>
+                <Select
+                  value={formData.serviceId ? formData.serviceId.toString() : ""}
+                  onValueChange={(value) =>
+                    setFormData({
+                      ...formData,
+                      serviceId: parseInt(value, 10),
+                    })
+                  }
+                  disabled={formServices.length === 0}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={formServices.length === 0 ? "No services available" : "Select Service"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {formServices.map((service) => (
+                      <SelectItem key={service.id} value={service.id.toString()}>
+                        {service.serviceName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="customer">Customer</Label>
+                <Select
+                  value={formData.customerId ? formData.customerId.toString() : ""}
+                  onValueChange={(value) =>
+                    handleCustomerChange(parseInt(value, 10))
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Customer" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {customers.map((customer) => (
+                      <SelectItem key={customer.id} value={customer.id.toString()}>
+                        {customer.customerName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="site">Site</Label>
+                <Select
+                  value={formData.siteId ? formData.siteId.toString() : ""}
+                  onValueChange={(value) =>
+                    setFormData({
+                      ...formData,
+                      siteId: parseInt(value, 10),
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Site" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {sites.map((site) => (
+                      <SelectItem key={site.id} value={site.id.toString()}>
+                        {site.siteName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="workScope">WorkScope</Label>
+                <Textarea
+                  id="workScope"
+                  value={formData.workScope || ""}
+                  onChange={(e) =>
+                    setFormData({ ...formData, workScope: e.target.value })
+                  }
+                  placeholder="WorkScope"
+                  className="min-h-[80px]"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="proposedDate">Proposed Date</Label>
+                <Input
+                  id="proposedDate"
+                  type="date"
+                  value={formData.proposedDate || ""}
+                  onChange={(e) =>
+                    setFormData({ ...formData, proposedDate: e.target.value })
+                  }
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="hod">HOD</Label>
+                <Select
+                  value={formData.hodId ? formData.hodId.toString() : ""}
+                  onValueChange={(value) =>
+                    setFormData({
+                      ...formData,
+                      hodId: parseInt(value, 10),
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select HOD" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {formHods.map((hod) => (
+                      <SelectItem key={hod.id} value={hod.id.toString()}>
+                        {hod.firstName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="manager">Manager</Label>
+                <Select
+                  value={formData.managerId ? formData.managerId.toString() : ""}
+                  onValueChange={(value) =>
+                    setFormData({
+                      ...formData,
+                      managerId: parseInt(value, 10),
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Manager" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-40">
+                    {formManagers.map((manager) => (
+                      <SelectItem key={manager.id} value={manager.id.toString()}>
+                        {manager.firstName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="executive">Executive</Label>
+                <Select
+                  value={formData.executiveId ? formData.executiveId.toString() : ""}
+                  onValueChange={(value) =>
+                    setFormData({
+                      ...formData,
+                      executiveId: parseInt(value, 10),
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Executive" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-40">
+                    {formExecutive.map((executive) => (
+                      <SelectItem key={executive.id} value={executive.id.toString()}>
+                        {executive.firstName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="priority">Priority</Label>
+                <Select
+                  value={formData.priority || ""}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, priority: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Priority" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="High">High</SelectItem>
+                    <SelectItem value="Mid">Mid</SelectItem>
+                    <SelectItem value="Low">Low</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="remark">Remark</Label>
+                <Textarea
+                  id="remark"
+                  value={formData.remark || ""}
+                  onChange={(e) =>
+                    setFormData({ ...formData, remark: e.target.value })
+                  }
+                  placeholder="Remark"
+                  className="min-h-[80px]"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="status">Status</Label>
+                <Select
+                  value={formData.status || "Open"}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, status: value })
+                  }
+                  disabled
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Open">Open</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-2 pt-4">
+                <Button
+                  onClick={handleSave}
+                  className="w-full bg-blue-600 hover:bg-blue-700"
+                >
+                  Save
+                </Button>
+                <Button
+                  onClick={() => setIsModalOpen(false)}
+                  variant="outline"
+                  className="w-full"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
 
           <div className="relative w-full md:w-64">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -455,12 +802,9 @@ const TaskTable: React.FC = () => {
                         const dateB = b.proposedDate ? new Date(b.proposedDate).getTime() : 0;
                         return dateB - dateA;
                       })
-                      .map((task, index) => (
-                        <motion.tr
+                      .map((task) => (
+                        <TableRow
                           key={task.id}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.3, delay: index * 0.1 }}
                           className="hover:bg-gray-50 transition-colors duration-200"
                         >
                           <TableCell className="font-medium">
@@ -493,7 +837,7 @@ const TaskTable: React.FC = () => {
                           <TableCell>
                             <div className="flex space-x-2">
                               <Button
-                                onClick={() => openModal(task)}
+                                onClick={async () => await openModal(task)}
                                 variant="outline"
                                 size="sm"
                                 className="hover:bg-yellow-50 hover:border-yellow-300 transition-all duration-200 transform hover:scale-105"
@@ -510,7 +854,7 @@ const TaskTable: React.FC = () => {
                               </Button>
                             </div>
                           </TableCell>
-                        </motion.tr>
+                        </TableRow>
                       ))
                   ) : (
                     <TableRow>
@@ -567,209 +911,6 @@ const TaskTable: React.FC = () => {
           </Button>
         </motion.div>
       </div>
-
-      {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center mt-5 bg-gray-800 bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded shadow-lg w-full max-w-md mx-4 max-h-[80vh] overflow-y-auto">
-            <h2 className="text-lg font-semibold mb-4 text-center">
-              {isEditing ? "Edit Task" : "Add Task"}
-            </h2>
-
-            <div className="space-y-3">
-              <select
-                value={formData.departmentId || ""}
-                onChange={(e) => {
-                  const departmentId = parseInt(e.target.value, 10);
-                  const departmentName =
-                    departments.find((dept) => dept.id === departmentId)
-                      ?.departmentName || "";
-                  handleDepartmentChange(departmentId, departmentName);
-                }}
-                className="border p-2 rounded w-full"
-              >
-                <option value="">Select Department</option>
-                {departments.map((department) => (
-                  <option key={department.id} value={department.id}>
-                    {department.departmentName}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                value={formData.serviceId || ""}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    serviceId: parseInt(e.target.value, 10),
-                  })
-                }
-                className="border p-2 rounded w-full"
-              >
-                <option value="">Select Service</option>
-                {formServices.map((service) => (
-                  <option key={service.id} value={service.id}>
-                    {service.serviceName}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                value={formData.customerId || ""}
-                onChange={(e) =>
-                  handleCustomerChange(parseInt(e.target.value, 10))
-                }
-                className="border p-2 rounded w-full"
-              >
-                <option value="">Select Customer</option>
-                {customers.map((customer) => (
-                  <option key={customer.id} value={customer.id}>
-                    {customer.customerName}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                value={formData.siteId || ""}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    siteId: parseInt(e.target.value, 10),
-                  })
-                }
-                className="border p-2 rounded w-full"
-              >
-                <option value="">Select Site</option>
-                {sites.map((site) => (
-                  <option key={site.id} value={site.id}>
-                    {site.siteName}
-                  </option>
-                ))}
-              </select>
-
-              <textarea
-                value={formData.workScope || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, workScope: e.target.value })
-                }
-                placeholder="WorkScope"
-                className="border p-2 rounded w-full"
-              />
-
-              <label className="block text-sm font-medium">Proposed Date</label>
-              <input
-                type="date"
-                value={formData.proposedDate || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, proposedDate: e.target.value })
-                }
-                className="border p-2 rounded w-full"
-              />
-
-              <select
-                value={formData.hodId || ""}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    hodId: parseInt(e.target.value, 10),
-                  })
-                }
-                className="border p-2 rounded w-full"
-              >
-                <option value="">Select HOD</option>
-                {formHods.map((hod) => (
-                  <option key={hod.id} value={hod.id}>
-                    {hod.firstName}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                value={formData.managerId || ""}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    managerId: parseInt(e.target.value, 10),
-                  })
-                }
-                className="border p-2 rounded w-full max-h-40 overflow-y-auto"
-              >
-                <option value="">Select Manager</option>
-                {formManagers.map((manager) => (
-                  <option key={manager.id} value={manager.id}>
-                    {manager.firstName}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                value={formData.executiveId || ""}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    executiveId: parseInt(e.target.value, 10),
-                  })
-                }
-                className="border p-2 rounded w-full max-h-40 overflow-y-auto"
-              >
-                <option value="">Select Executive</option>
-                {formExecutive.map((executive) => (
-                  <option key={executive.id} value={executive.id}>
-                    {executive.firstName}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                value={formData.priority || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, priority: e.target.value })
-                }
-                className="border p-2 rounded w-full"
-              >
-                <option value="">Select Priority</option>
-                <option value="High">High</option>
-                <option value="Mid">Mid</option>
-                <option value="Low">Low</option>
-              </select>
-
-              <textarea
-                value={formData.remark || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, remark: e.target.value })
-                }
-                placeholder="Remark"
-                className="border p-2 rounded w-full"
-              />
-
-              <select
-                value={formData.status || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, status: e.target.value })
-                }
-                className="border p-2 rounded w-full"
-                disabled
-              >
-                <option value="Open">Open</option>
-              </select>
-
-              <div className="flex flex-col sm:flex-row gap-2">
-                <button
-                  onClick={handleSave}
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full"
-                >
-                  Save
-                </button>
-                <button
-                  onClick={() => setIsModalOpen(false)}
-                  className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500 w-full"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

@@ -25,7 +25,7 @@ export function SimpleCustomerSelect({
   React.useEffect(() => {
     async function fetchCustomers() {
       try {
-        const res = await fetch("http://192.168.29.167:8000/customers");
+        const res = await fetch("http://localhost:8000/customers");
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
         }

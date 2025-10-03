@@ -97,7 +97,7 @@ const VendorTable: React.FC = () => {
   const itemsPerPage = 5;
 
   const fetchVendors = async () => {
-    const response = await axios.get("http://192.168.29.167:8000/vendors");
+    const response = await axios.get("http://localhost:8000/vendors");
     setVendors(response.data.reverse());
   };
 
@@ -127,7 +127,7 @@ const VendorTable: React.FC = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("http://192.168.29.167:8000/category");
+      const response = await axios.get("http://localhost:8000/category");
       const names = response.data.map((c: any) => c.categoryName);
       setCategories(names);
     } catch (error) {
@@ -207,7 +207,7 @@ const VendorTable: React.FC = () => {
     if (!confirm) return;
 
     try {
-      await axios.delete(`http://192.168.29.167:8000/vendors/${id}`);
+      await axios.delete(`http://localhost:8000/vendors/${id}`);
       setAlert({ type: 'success', message: 'Vendor deleted successfully!' });
       fetchVendors();
     } catch (err) {
@@ -278,10 +278,10 @@ const VendorTable: React.FC = () => {
 
     // ✅ Choose endpoint based on whether it's create or update
     if (formData.id) {
-      await axios.put(`http://192.168.29.167:8000/vendors/${formData.id}`, payload);
+      await axios.put(`http://localhost:8000/vendors/${formData.id}`, payload);
       setAlert({ type: 'success', message: 'Vendor updated successfully!' });
     } else {
-      await axios.post("http://192.168.29.167:8000/vendors", payload);
+      await axios.post("http://localhost:8000/vendors", payload);
       setAlert({ type: 'success', message: 'Vendor created successfully!' });
     }
 
@@ -297,13 +297,8 @@ const VendorTable: React.FC = () => {
 };
 
   return (
-    <div className="flex-1 p-6 bg-gray-50 min-h-screen">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-7xl mx-auto"
-      >
+    <div className="flex-1 p-6 bg-white min-h-screen">
+      <div className="max-w-7xl mx-auto">
         <div className="mb-6 bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="px-6 py-4 border-b border-gray-200">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
@@ -533,7 +528,7 @@ const VendorTable: React.FC = () => {
                         )}
                         {!gstPdfFile && formData.gstpdf && (
                           <a
-                            href={`http://192.168.29.167:8000/gst/${formData.gstpdf}`}
+                            href={`http://localhost:8000/gst/${formData.gstpdf}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-blue-600 hover:text-blue-800 underline text-sm mt-1 block transition-colors duration-200"
@@ -790,7 +785,7 @@ const VendorTable: React.FC = () => {
                       <TableCell className="px-6 py-4">
                         {vendor.gstpdf ? (
                           <a
-                            href={`http://192.168.29.167:8000/gst/${vendor.gstpdf}`}
+                            href={`http://localhost:8000/gst/${vendor.gstpdf}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-blue-600 hover:text-blue-800 underline text-sm"
@@ -805,20 +800,20 @@ const VendorTable: React.FC = () => {
                       <TableCell className="px-6 py-4">
                         <div className="flex items-center justify-center gap-2">
                           <Button
-                            variant="ghost"
                             size="sm"
+                            variant="outline"
                             onClick={() => handleEdit(vendor)}
-                            className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-1 h-8 w-8"
+                            className="border-yellow-300 text-yellow-600 hover:bg-yellow-50 hover:border-yellow-400 hover:text-yellow-700 transition-colors duration-200"
                           >
-                            <Edit className="h-4 w-4" />
+                            <Edit className="h-3 w-3" />
                           </Button>
                           <Button
-                            variant="ghost"
                             size="sm"
+                            variant="outline"
                             onClick={() => handleDelete(vendor.id)}
-                            className="text-red-600 hover:text-red-800 hover:bg-red-50 p-1 h-8 w-8"
+                            className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 hover:text-red-700 transition-colors duration-200"
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="h-3 w-3" />
                           </Button>
                         </div>
                       </TableCell>
@@ -830,12 +825,7 @@ const VendorTable: React.FC = () => {
           </div>
         </div>
 
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="flex justify-center items-center mt-6 space-x-2"
-        >
+        <div className="flex justify-center items-center mt-6 space-x-2">
           <Button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
@@ -871,8 +861,8 @@ const VendorTable: React.FC = () => {
           >
             Next
           </Button>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </div>
   );
 };

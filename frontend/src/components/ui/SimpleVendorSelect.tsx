@@ -25,7 +25,7 @@ export function SimpleVendorSelect({
   React.useEffect(() => {
     async function fetchVendors() {
       try {
-        const res = await fetch("http://192.168.29.167:8000/vendors");
+        const res = await fetch("http://localhost:8000/vendors");
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
         }

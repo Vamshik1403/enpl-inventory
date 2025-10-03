@@ -85,7 +85,7 @@ export default function ServiceTable() {
   const fetchServices = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://192.168.29.167:8000/service");
+      const response = await axios.get("http://localhost:8000/service");
       setServices(response.data);
       setError(null);
     } catch (err) {
@@ -98,7 +98,7 @@ export default function ServiceTable() {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("http://192.168.29.167:8000/servicecategory");
+      const response = await axios.get("http://localhost:8000/servicecategory");
       setCategories(response.data);
     } catch (err) {
       console.error("Error fetching categories:", err);
@@ -107,7 +107,7 @@ export default function ServiceTable() {
 
   const fetchSubcategories = async () => {
     try {
-      const response = await axios.get("http://192.168.29.167:8000/servicesubcategory");
+      const response = await axios.get("http://localhost:8000/servicesubcategory");
       setSubcategories(response.data);
     } catch (err) {
       console.error("Error fetching subcategories:", err);
@@ -158,7 +158,7 @@ export default function ServiceTable() {
 
   const handleAddService = async () => {
     try {
-      const response = await axios.post("http://192.168.29.167:8000/service", formData);
+      const response = await axios.post("http://localhost:8000/service", formData);
       setServices([...services, response.data]);
       setFormData({
         serviceSkuId: "",
@@ -179,7 +179,7 @@ export default function ServiceTable() {
     if (!selectedService) return;
 
     try {
-      const response = await axios.put(`http://192.168.29.167:8000/service/${selectedService.id}`, formData);
+      const response = await axios.put(`http://localhost:8000/service/${selectedService.id}`, formData);
       setServices(services.map(service => 
         service.id === selectedService.id ? response.data : service
       ));
@@ -195,7 +195,7 @@ export default function ServiceTable() {
     if (!selectedService) return;
 
     try {
-      await axios.delete(`http://192.168.29.167:8000/service/${selectedService.id}`);
+      await axios.delete(`http://localhost:8000/service/${selectedService.id}`);
       setServices(services.filter(service => service.id !== selectedService.id));
       setIsDeleteModalOpen(false);
       setSelectedService(null);
@@ -387,18 +387,20 @@ export default function ServiceTable() {
                   <TableCell>
                     <div className="flex items-center space-x-2">
                       <Button
-                        variant="ghost"
                         size="sm"
+                        variant="outline"
                         onClick={() => openEditModal(service)}
+                        className="border-yellow-300 text-yellow-600 hover:bg-yellow-50 hover:border-yellow-400 hover:text-yellow-700 transition-colors duration-200"
                       >
-                        <Edit className="h-4 w-4" />
+                        <Edit className="h-3 w-3" />
                       </Button>
                       <Button
-                        variant="ghost"
                         size="sm"
+                        variant="outline"
                         onClick={() => openDeleteModal(service)}
+                        className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 hover:text-red-700 transition-colors duration-200"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3 w-3" />
                       </Button>
                     </div>
                   </TableCell>

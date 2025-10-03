@@ -158,12 +158,12 @@ const VendorPaymentTable: React.FC = () => {
   }, []);
 
   const fetchPayments = async () => {
-    const res = await axios.get("http://192.168.29.167:8000/vendor-payment");
+    const res = await axios.get("http://localhost:8000/vendor-payment");
     setPayments(res.data.reverse());
   };
 
   const fetchVendors = async () => {
-    const res = await axios.get("http://192.168.29.167:8000/vendors");
+    const res = await axios.get("http://localhost:8000/vendors");
     setVendors(res.data);
   };
 
@@ -265,13 +265,13 @@ const VendorPaymentTable: React.FC = () => {
     try {
       if (formData.id) {
         await axios.put(
-          `http://192.168.29.167:8000/vendor-payment/${formData.id}`,
+          `http://localhost:8000/vendor-payment/${formData.id}`,
           formData
         );
         setAlertMessage("Payment updated successfully!");
         setAlertType("success");
       } else {
-        await axios.post("http://192.168.29.167:8000/vendor-payment", formData);
+        await axios.post("http://localhost:8000/vendor-payment", formData);
         setAlertMessage("Payment added successfully!");
         setAlertType("success");
       }
@@ -293,7 +293,7 @@ const VendorPaymentTable: React.FC = () => {
     );
     if (confirmed) {
       try {
-        await axios.delete(`http://192.168.29.167:8000/vendor-payment/${id}`);
+        await axios.delete(`http://localhost:8000/vendor-payment/${id}`);
         setAlertMessage("Payment deleted successfully!");
         setAlertType("success");
         fetchPayments();
@@ -331,7 +331,7 @@ const VendorPaymentTable: React.FC = () => {
               setFormData((prev) => ({ ...prev, vendorId: val }));
               try {
                 const res = await axios.get(
-                  `http://192.168.29.167:8000/inventory?vendorId=${val}`
+                  `http://localhost:8000/inventory?vendorId=${val}`
                 );
                 if (res.data && res.data.length > 0) {
                   setVendorInvoices(res.data);
@@ -553,7 +553,7 @@ const VendorPaymentTable: React.FC = () => {
   ), [formData, vendorInvoices, handlePaidAmountChange, handleReferenceChange, handleRemarkChange, handleChange, handleSave, setIsModalOpen, payments]);
 
   return (
-    <div className="flex-1 p-6 bg-gray-50 min-h-screen">
+    <div className="flex-1 p-6 bg-white min-h-screen">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -663,12 +663,9 @@ const VendorPaymentTable: React.FC = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paginated.map((p, index) => (
-                  <motion.tr
+                {paginated.map((p) => (
+                  <TableRow
                     key={p.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.05 }}
                     className="hover:bg-gray-50 transition-colors"
                   >
                     <TableCell className="px-4 py-3 text-center">
@@ -702,12 +699,12 @@ const VendorPaymentTable: React.FC = () => {
                     <TableCell className="px-4 py-3 text-center">
                       <div className="flex items-center justify-center gap-2">
                         <Button
-                          variant="ghost"
                           size="sm"
+                          variant="outline"
                           onClick={() => openModal(p)}
-                          className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-1 h-8 w-8"
+                          className="border-yellow-300 text-yellow-600 hover:bg-yellow-50 hover:border-yellow-400 hover:text-yellow-700 transition-colors duration-200"
                         >
-                          <PencilLine className="w-4 h-4" />
+                          <PencilLine className="h-3 w-3" />
                         </Button>
                         <Button
                           variant="ghost"
@@ -719,7 +716,7 @@ const VendorPaymentTable: React.FC = () => {
                         </Button>
                       </div>
                     </TableCell>
-                  </motion.tr>
+                  </TableRow>
                 ))}
               </TableBody>
             </Table>

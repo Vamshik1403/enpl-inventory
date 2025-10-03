@@ -175,22 +175,22 @@ const MaterialDeliveryForm: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get("http://192.168.29.167:8000/customers")
+      .get("http://localhost:8000/customers")
       .then((res) => setCustomers(res.data));
     axios
-      .get("http://192.168.29.167:8000/vendors")
+      .get("http://localhost:8000/vendors")
       .then((res) => setVendors(res.data));
     axios
-      .get("http://192.168.29.167:8000/products")
+      .get("http://localhost:8000/products")
       .then((res) => setProducts(res.data));
     axios
-      .get("http://192.168.29.167:8000/inventory")
+      .get("http://localhost:8000/inventory")
       .then((res) => setInventory(res.data));
     fetchDeliveries(); // Fetch deliveries on component mount
   }, []);
 
   useEffect(() => {
-    axios.get("http://192.168.29.167:8000/inventory").then((res) => {
+    axios.get("http://localhost:8000/inventory").then((res) => {
       console.log("Raw inventory response:", res.data); // ✅ log raw response
 
       const flattened = res.data.flatMap((inv: any) =>
@@ -210,7 +210,7 @@ const MaterialDeliveryForm: React.FC = () => {
   }, []);
 
   const fetchDeliveries = async () => {
-    const res = await axios.get("http://192.168.29.167:8000/material-delivery");
+    const res = await axios.get("http://localhost:8000/material-delivery");
     setDeliveryList(res.data.reverse());
   };
 
@@ -384,12 +384,12 @@ const MaterialDeliveryForm: React.FC = () => {
     try {
       if (isEdit) {
         await axios.put(
-          `http://192.168.29.167:8000/material-delivery/${formData.id}`,
+          `http://localhost:8000/material-delivery/${formData.id}`,
           payload
         );
         setAlert({ type: "success", message: "Delivery updated sucessfully!" });
       } else {
-        await axios.post("http://192.168.29.167:8000/material-delivery", payload);
+        await axios.post("http://localhost:8000/material-delivery", payload);
         setAlert({ type: "success", message: "Delivery created successfully!" });
       }
 
@@ -452,7 +452,7 @@ const MaterialDeliveryForm: React.FC = () => {
   const handleDelete = (id: any): void => {
     if (confirm("Are you sure you want to delete this delivery?")) {
       axios
-        .delete(`http://192.168.29.167:8000/material-delivery/${id}`)
+        .delete(`http://localhost:8000/material-delivery/${id}`)
         .then(() => {
           setAlert({ type: "success", message: "Delivery deleted!" });
           fetchDeliveries();
@@ -655,12 +655,12 @@ const MaterialDeliveryForm: React.FC = () => {
                     <TableCell className="text-center">
                       <div className="flex justify-center gap-2">
                         <Button
-                          variant="ghost"
                           size="sm"
+                          variant="outline"
                           onClick={() => openModal(delivery)}
-                          className="text-blue-600 hover:text-blue-800"
+                          className="border-yellow-300 text-yellow-600 hover:bg-yellow-50 hover:border-yellow-400 hover:text-yellow-700 transition-colors duration-200"
                         >
-                          <PencilLine className="h-4 w-4" />
+                          <PencilLine className="h-3 w-3" />
                         </Button>
                         <Button
                           variant="ghost"

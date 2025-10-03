@@ -61,7 +61,7 @@ const ProductTable: React.FC = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get("http://192.168.29.167:8000/products");
+      const response = await axios.get("http://localhost:8000/products");
       setProducts(response.data.reverse());
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -71,7 +71,7 @@ const ProductTable: React.FC = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("http://192.168.29.167:8000/category");
+      const response = await axios.get("http://localhost:8000/category");
       setCategories(response.data);
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -81,7 +81,7 @@ const ProductTable: React.FC = () => {
 
   const fetchSubCategories = async () => {
     try {
-      const response = await axios.get("http://192.168.29.167:8000/subcategory");
+      const response = await axios.get("http://localhost:8000/subcategory");
       setSubCategories(response.data);
     } catch (error) {
       console.error("Error fetching subcategories:", error);
@@ -137,7 +137,7 @@ const ProductTable: React.FC = () => {
       return;
     }
     try {
-      await axios.delete(`http://192.168.29.167:8000/products/${id}`);
+      await axios.delete(`http://localhost:8000/products/${id}`);
       showAlert("Product deleted successfully!", "success");
       fetchProducts();
     } catch (error) {
@@ -327,13 +327,10 @@ const handleSort = (field: keyof Product | "category" | "subCategory") => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {currentProducts.map((product, index) => (
-                  <motion.tr
+                {currentProducts.map((product) => (
+                  <TableRow
                     key={product.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.05 }}
-                    className="hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200"
+                    className="hover:bg-gray-50 transition-colors"
                   >
                     <TableCell className="text-center font-medium">
                       {product.productId}
@@ -381,7 +378,7 @@ const handleSort = (field: keyof Product | "category" | "subCategory") => {
                         </motion.div>
                       </div>
                     </TableCell>
-                  </motion.tr>
+                  </TableRow>
                 ))}
               </TableBody>
             </Table>

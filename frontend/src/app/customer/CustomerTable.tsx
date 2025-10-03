@@ -102,7 +102,7 @@ const CustomerTable: React.FC = () => {
 
   const fetchCustomers = async () => {
     try {
-      const res = await axios.get("http://192.168.29.167:8000/customers");
+      const res = await axios.get("http://localhost:8000/customers");
       setCustomers(res.data);
     } catch (error) {
       console.error("Error fetching customers:", error);
@@ -111,7 +111,7 @@ const CustomerTable: React.FC = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("http://192.168.29.167:8000/category");
+      const response = await axios.get("http://localhost:8000/category");
       const names = response.data.map((c: any) => c.categoryName);
       setCategories(names);
     } catch (error) {
@@ -192,7 +192,7 @@ const CustomerTable: React.FC = () => {
     const confirm = window.confirm("Are you sure you want to delete this customer?");
     if (!confirm) return;
     try {
-      await axios.delete(`http://192.168.29.167:8000/customers/${id}`);
+      await axios.delete(`http://localhost:8000/customers/${id}`);
       setAlert({ type: 'success', message: 'Customer deleted successfully!' });
       fetchCustomers();
     } catch (err) {
@@ -268,14 +268,14 @@ const CustomerTable: React.FC = () => {
       // Create or update
       if (formData.id) {
         await axios.put(
-          `http://192.168.29.167:8000/customers/${formData.id}`,
+          `http://localhost:8000/customers/${formData.id}`,
           form,
           {
             headers: { "Content-Type": "multipart/form-data" },
           }
         );
       } else {
-        await axios.post("http://192.168.29.167:8000/customers", form, {
+        await axios.post("http://localhost:8000/customers", form, {
           headers: { "Content-Type": "multipart/form-data" },
         });
       }
@@ -311,13 +311,8 @@ const CustomerTable: React.FC = () => {
   const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
 
   return (
-    <div className="flex-1 p-6 bg-gray-50 min-h-screen">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-7xl mx-auto"
-      >
+    <div className="flex-1 p-6 bg-white min-h-screen">
+      <div className="max-w-7xl mx-auto">
         <div className="mb-6 bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="px-6 py-4 border-b border-gray-200">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
@@ -427,7 +422,7 @@ const CustomerTable: React.FC = () => {
                       <TableCell className="px-4 py-3">
                         {customer.gstpdf ? (
                           <a
-                            href={`http://192.168.29.167:8000/gst/${customer.gstpdf}`}
+                            href={`http://localhost:8000/gst/${customer.gstpdf}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-blue-600 hover:text-blue-800 hover:underline transition-colors duration-200"
@@ -441,20 +436,20 @@ const CustomerTable: React.FC = () => {
                       <TableCell className="px-4 py-3">
                         <div className="flex items-center gap-2">
                           <Button
-                            variant="ghost"
                             size="sm"
+                            variant="outline"
                             onClick={() => handleEdit(customer)}
-                            className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-1 h-8 w-8"
+                            className="border-yellow-300 text-yellow-600 hover:bg-yellow-50 hover:border-yellow-400 hover:text-yellow-700 transition-colors duration-200"
                           >
-                            <Edit className="h-4 w-4" />
+                            <Edit className="h-3 w-3" />
                           </Button>
                           <Button
-                            variant="ghost"
                             size="sm"
+                            variant="outline"
                             onClick={() => handleDelete(customer.id)}
-                            className="text-red-600 hover:text-red-800 hover:bg-red-50 p-1 h-8 w-8"
+                            className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 hover:text-red-700 transition-colors duration-200"
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="h-3 w-3" />
                           </Button>
                         </div>
                       </TableCell>
@@ -465,12 +460,7 @@ const CustomerTable: React.FC = () => {
             </div>
           </div>
         </div>
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="flex justify-center items-center mt-6 space-x-2"
-        >
+        <div className="flex justify-center items-center mt-6 space-x-2">
           <Button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
@@ -506,12 +496,12 @@ const CustomerTable: React.FC = () => {
           >
             Next
           </Button>
-        </motion.div>
+        </div>
 
         <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-white">
+              <DialogTitle className="text-2xl font-bold text-black">
                 {formData.id ? "Edit Customer" : "Create Customer"}
               </DialogTitle>
             </DialogHeader>
@@ -594,7 +584,7 @@ const CustomerTable: React.FC = () => {
                 )}
                 {!gstpdfFile && existingGstFileName && (
                   <a
-                    href={`http://192.168.29.167:8000/gst/${existingGstFileName}`}
+                    href={`http://localhost:8000/gst/${existingGstFileName}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-600 hover:text-blue-800 underline text-sm mt-2 block transition-colors duration-200"
@@ -738,7 +728,7 @@ const CustomerTable: React.FC = () => {
             </div>
           </DialogContent>
         </Dialog>
-      </motion.div>
+      </div>
     </div>
   );
 };

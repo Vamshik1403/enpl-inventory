@@ -40,7 +40,7 @@ interface Department {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("http://192.168.29.167:8000/users");
+      const response = await axios.get("http://localhost:8000/users");
       setUsers(response.data.reverse());
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -49,7 +49,7 @@ interface Department {
 
   const fetchDepartments = async () => {
     try {
-      const response = await axios.get("http://192.168.29.167:8000/departments");
+      const response = await axios.get("http://localhost:8000/departments");
       setDepartments(response.data);
     } catch (error) {
       console.error("Error fetching departments:", error);
@@ -58,7 +58,7 @@ interface Department {
 
   const handleDelete = async (id: string) => {
     try {
-      await axios.delete(`http://192.168.29.167:8000/users/${id}`);
+      await axios.delete(`http://localhost:8000/users/${id}`);
       setAlert({ type: 'success', message: 'User deleted successfully!' });
       fetchUsers();
     } catch (error) {
@@ -100,7 +100,7 @@ interface Department {
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
   return (
-    <div className="flex-1 p-6 bg-gray-50 min-h-screen">
+    <div className="flex-1 p-6 bg-white min-h-screen">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -149,12 +149,9 @@ interface Department {
               <TableBody>
                 {currentUsers
                   .filter((user) => user.username !== "admin")
-                  .map((user, index) => (
-                    <motion.tr
+                  .map((user) => (
+                    <TableRow
                       key={user.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.05 }}
                       className="hover:bg-gray-50 transition-colors"
                     >
                       <TableCell className="px-4 py-3 font-medium">{user.username}</TableCell>
@@ -167,12 +164,12 @@ interface Department {
                       <TableCell className="px-4 py-3">
                         <div className="flex items-center gap-2">
                           <Button
-                            variant="ghost"
                             size="sm"
+                            variant="outline"
                             onClick={() => handleEdit(user.id)}
-                            className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-1 h-8 w-8"
+                            className="border-yellow-300 text-yellow-600 hover:bg-yellow-50 hover:border-yellow-400 hover:text-yellow-700 transition-colors duration-200"
                           >
-                            <Edit className="h-4 w-4" />
+                            <Edit className="h-3 w-3" />
                           </Button>
                           <Button
                             variant="ghost"
@@ -184,7 +181,7 @@ interface Department {
                           </Button>
                         </div>
                       </TableCell>
-                    </motion.tr>
+                    </TableRow>
                   ))}
               </TableBody>
             </Table>

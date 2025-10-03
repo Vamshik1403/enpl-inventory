@@ -26,7 +26,7 @@ export function SimpleProductSelect({
   React.useEffect(() => {
     async function fetchProducts() {
       try {
-        const res = await fetch("http://192.168.29.167:8000/products");
+        const res = await fetch("http://localhost:8000/products");
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
         }

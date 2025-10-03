@@ -44,7 +44,7 @@ export default function MacAddressCombobox({
   React.useEffect(() => {
     async function fetchMacAddressNumbers() {
       try {
-        const res = await fetch("http://192.168.29.167:8000/inventory");
+        const res = await fetch("http://localhost:8000/inventory");
         const data = await res.json();
 
         const flattened: MacAddress[] = data.flatMap((inv: any) =>

@@ -149,7 +149,7 @@ const InventoryTable: React.FC = () => {
   }, [inventoryList, searchQuery]);
 
   const fetchInventory = async () => {
-    const res = await axios.get("http://192.168.29.167:8000/inventory");
+    const res = await axios.get("http://localhost:8000/inventory");
     console.log("Inventory: Raw inventory data:", res.data);
     
     const inventoryWithDuration = res.data.map((item: Inventory) => {
@@ -169,12 +169,12 @@ const InventoryTable: React.FC = () => {
   };
 
   const fetchProducts = async () => {
-    const res = await axios.get("http://192.168.29.167:8000/products");
+    const res = await axios.get("http://localhost:8000/products");
     setProducts(res.data);
   };
 
   const fetchVendors = async () => {
-    const res = await axios.get("http://192.168.29.167:8000/vendors");
+    const res = await axios.get("http://localhost:8000/vendors");
     setVendors(res.data);
   };
 
@@ -346,11 +346,11 @@ const InventoryTable: React.FC = () => {
       console.log("Sending payload:", payload);
 
       if (formData.id) {
-        await axios.put(`http://192.168.29.167:8000/inventory/${formData.id}`, payload);
+        await axios.put(`http://localhost:8000/inventory/${formData.id}`, payload);
         setAlertMessage("Inventory updated successfully!");
         setAlertType("success");
       } else {
-        await axios.post("http://192.168.29.167:8000/inventory", payload);
+        await axios.post("http://localhost:8000/inventory", payload);
         setAlertMessage("Inventory created successfully!");
         setAlertType("success");
       }
@@ -405,7 +405,7 @@ const InventoryTable: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 p-6 bg-gray-50 min-h-screen">
+    <div className="flex-1 p-6 bg-white min-h-screen">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -575,12 +575,12 @@ const InventoryTable: React.FC = () => {
                           whileTap={{ scale: 0.9 }}
                         >
                           <Button
-                            variant="ghost"
                             size="sm"
+                            variant="outline"
                             onClick={() => openModal(inv)}
-                            className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                            className="border-yellow-300 text-yellow-600 hover:bg-yellow-50 hover:border-yellow-400 hover:text-yellow-700 transition-colors duration-200"
                           >
-                            <PencilLine size={16} />
+                            <PencilLine className="h-3 w-3" />
                           </Button>
                         </motion.div>
                       </TableCell>

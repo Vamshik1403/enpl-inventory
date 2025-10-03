@@ -1,7 +1,7 @@
 // API Configuration
 export const API_CONFIG = {
   // Base URL for the backend API
-  BASE_URL: 'http://192.168.29.167:8000',
+  BASE_URL: 'http://localhost:8000',
   
   // API endpoints
   ENDPOINTS: {

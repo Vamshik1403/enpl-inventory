@@ -78,7 +78,7 @@ const SubCategoryTable: React.FC = () => {
   // ✅ Fetch categories for the dropdown
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("http://192.168.29.167:8000/category");
+      const response = await axios.get("http://localhost:8000/category");
       setCategories(response.data);
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -89,7 +89,7 @@ const SubCategoryTable: React.FC = () => {
   // ✅ Fetch subcategories for the table
   const fetchSubCategories = async () => {
     try {
-      const response = await axios.get("http://192.168.29.167:8000/subcategory");
+      const response = await axios.get("http://localhost:8000/subcategory");
       const filteredSubCategories = response.data.filter(
         (subCategory: SubCategory) =>
           subCategory.category?.categoryName && subCategory.subCategoryName
@@ -105,7 +105,7 @@ const SubCategoryTable: React.FC = () => {
     if (window.confirm("Are you sure you want to delete this subcategory?")) {
       try {
         await axios.delete(
-          `http://192.168.29.167:8000/subcategory/${subCategoryId}`
+          `http://localhost:8000/subcategory/${subCategoryId}`
         );
         showAlert("Subcategory deleted successfully!", "success");
         fetchSubCategories(); // Re-fetch subcategories to update the table
@@ -164,7 +164,7 @@ const SubCategoryTable: React.FC = () => {
       if (selectedSubCategory) {
         // Updating existing subcategory
         await axios.put(
-          `http://192.168.29.167:8000/subcategory/${selectedSubCategory.id}`,
+          `http://localhost:8000/subcategory/${selectedSubCategory.id}`,
           {
             categoryId,
             subCategoryName,
@@ -174,7 +174,7 @@ const SubCategoryTable: React.FC = () => {
         showAlert("Subcategory updated successfully!", "success");
       } else {
         // Creating new subcategory
-        await axios.post("http://192.168.29.167:8000/subcategory", {
+        await axios.post("http://localhost:8000/subcategory", {
           categoryId,
           subCategoryName,
           subCategoryId: newSubCategoryId,
@@ -354,13 +354,10 @@ const SubCategoryTable: React.FC = () => {
               </TableHeader>
               <TableBody>
                 {currentSubcategories.length > 0 ? (
-                  currentSubcategories.map((subCategory, index) => (
-                    <motion.tr
+                  currentSubcategories.map((subCategory) => (
+                    <TableRow
                       key={subCategory.subCategoryId}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.05 }}
-                      className="hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200"
+                      className="hover:bg-gray-50 transition-colors"
                     >
                       <TableCell className="text-center font-medium">
                         {subCategory.subCategoryId}
@@ -399,9 +396,9 @@ const SubCategoryTable: React.FC = () => {
                               <Trash2 size={16} />
                             </Button>
                           </motion.div>
-                        </div>
-                      </TableCell>
-                    </motion.tr>
+                          </div>
+                        </TableCell>
+                    </TableRow>
                   ))
                 ) : (
                   <TableRow>

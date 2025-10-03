@@ -29,7 +29,7 @@ export function SimpleSerialSelect({
   React.useEffect(() => {
     async function fetchSerialNumbers() {
       try {
-        const res = await fetch("http://192.168.29.167:8000/inventory");
+        const res = await fetch("http://localhost:8000/inventory");
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
         }

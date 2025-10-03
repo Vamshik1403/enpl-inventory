@@ -22,6 +22,9 @@ import {
   MessageSquare,
   ChevronLeft,
   ChevronRight,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
   Send,
   CheckCircle,
   PlayCircle,
@@ -175,6 +178,24 @@ export default function TicketPage() {
     return matchesSearch && matchesStatus && matchesPriority && matchesCategory;
   });
 
+  const getCustomerName = (ticket: Ticket) => {
+    if (ticket.categoryName === "PreSales" || ticket.categoryName === "Others") {
+      return ticket.manCustm || "N/A";
+    } else {
+      const foundCustomer = customers.find((c) => c.id === ticket.customerId);
+      return ticket.customer?.customerName || foundCustomer?.customerName || "N/A";
+    }
+  };
+
+  const getSiteName = (ticket: Ticket) => {
+    if (ticket.categoryName === "PreSales" || ticket.categoryName === "Others") {
+      return ticket.manSite || "N/A";
+    } else {
+      const foundSite = allSites.find((s) => s.id === ticket.siteId);
+      return ticket.site?.siteName || foundSite?.siteName || "N/A";
+    }
+  };
+
   const sortedTickets = React.useMemo(() => {
     if (!sortField) return filteredTickets;
 
@@ -221,7 +242,7 @@ export default function TicketPage() {
       // The backend already handles admin vs user logic in the /user/:userId endpoint
       // For SUPERADMIN: returns all tickets
       // For regular users: returns only their tickets (created by them OR assigned to them)
-      const endpoint = `http://192.168.29.167:8000/tickets/user/${userId}`;
+      const endpoint = `http://localhost:8000/tickets/user/${userId}`;
       const response = await axios.get(endpoint);
       
       if (response.data) {
@@ -246,7 +267,7 @@ export default function TicketPage() {
 
   const fetchCustomers = async () => {
     try {
-      const res = await axios.get("http://192.168.29.167:8000/customers");
+      const res = await axios.get("http://localhost:8000/customers");
       setCustomers(res.data);
     } catch (error) {
       // Silent error handling - will show no data if fetch fails
@@ -255,7 +276,7 @@ export default function TicketPage() {
 
   const fetchAllSites = async () => {
     try {
-      const response = await axios.get("http://192.168.29.167:8000/sites");
+      const response = await axios.get("http://localhost:8000/sites");
       setAllSites(response.data);
     } catch (error) {
       // Silent error handling - will show no data if fetch fails
@@ -265,9 +286,9 @@ export default function TicketPage() {
   const fetchTicketDetails = async (id: number) => {
     try {
       setIsRefreshing(true);
-      const res = await axios.get(`http://192.168.29.167:8000/tickets/${id}`);
+      const res = await axios.get(`http://localhost:8000/tickets/${id}`);
       setSelectedTicket(res.data);
-      const msgRes = await axios.get(`http://192.168.29.167:8000/message/${id}`);
+      const msgRes = await axios.get(`http://localhost:8000/message/${id}`);
       setMessages(msgRes.data);
     } catch (error) {
       // Silent error handling - will show no data if fetch fails
@@ -279,7 +300,7 @@ export default function TicketPage() {
   const fetchCurrentUser = async () => {
     try {
       if (userId) {
-        const response = await axios.get(`http://192.168.29.167:8000/users/${userId}`);
+        const response = await axios.get(`http://localhost:8000/users/${userId}`);
         setCurrentUser(response.data);
       }
     } catch (error) {
@@ -355,7 +376,7 @@ export default function TicketPage() {
         ticketData.mobileNo = form.mobileNo;
       }
       
-      await axios.post("http://192.168.29.167:8000/tickets", ticketData);
+      await axios.post("http://localhost:8000/tickets", ticketData);
       setTicketModalOpen(false);
       
       // Immediately refresh tickets list
@@ -396,24 +417,6 @@ export default function TicketPage() {
     }
   };
 
-  const getCustomerName = (ticket: Ticket) => {
-    if (ticket.categoryName === "PreSales" || ticket.categoryName === "Others") {
-      return ticket.manCustm || "N/A";
-    } else {
-      const foundCustomer = customers.find((c) => c.id === ticket.customerId);
-      return ticket.customer?.customerName || foundCustomer?.customerName || "N/A";
-    }
-  };
-
-  const getSiteName = (ticket: Ticket) => {
-    if (ticket.categoryName === "PreSales" || ticket.categoryName === "Others") {
-      return ticket.manSite || "N/A";
-    } else {
-      const foundSite = allSites.find((s) => s.id === ticket.siteId);
-      return ticket.site?.siteName || foundSite?.siteName || "N/A";
-    }
-  };
-
   const isAdmin = () => {
     return userType === 'SUPERADMIN';
   };
@@ -422,7 +425,7 @@ export default function TicketPage() {
     if (!newMessage.trim() || !selectedTicket || !userId) return;
     
     try {
-      await axios.post("http://192.168.29.167:8000/message", {
+      await axios.post("http://localhost:8000/message", {
         content: newMessage,
         senderId: userId,
         ticketId: selectedTicket.id,
@@ -470,7 +473,7 @@ export default function TicketPage() {
     }
 
     try {
-      await axios.patch(`http://192.168.29.167:8000/tickets/${ticketId}`, {
+      await axios.patch(`http://localhost:8000/tickets/${ticketId}`, {
         status: newStatus,
       });
       
@@ -511,7 +514,7 @@ export default function TicketPage() {
     }
 
     try {
-      await axios.patch(`http://192.168.29.167:8000/tickets/${ticketId}`, {
+      await axios.patch(`http://localhost:8000/tickets/${ticketId}`, {
         status: "REOPENED",
       });
       
@@ -544,7 +547,7 @@ export default function TicketPage() {
     }
 
     try {
-      await axios.delete(`http://192.168.29.167:8000/tickets/${ticketId}`, {
+      await axios.delete(`http://localhost:8000/tickets/${ticketId}`, {
         data: { deletedBy: userId }
       });
       
@@ -644,7 +647,7 @@ export default function TicketPage() {
 
   return (
     <AppSidebarLayout>
-      <div className="space-y-6 p-6">
+      <div className="space-y-2 p-2">
         
         {/* Header */}
         <motion.div
@@ -653,17 +656,6 @@ export default function TicketPage() {
           transition={{ duration: 0.5 }}
           className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0"
         >
-          <div className="space-y-1">
-            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Support Tickets {userType === 'SUPERADMIN' ? '(Admin View)' : '(User View)'}
-            </h1>
-            <p className="text-muted-foreground">
-              {userType === 'SUPERADMIN' 
-                ? "Manage and track all customer support tickets" 
-                : "View and manage your support tickets"
-              }
-            </p>
-          </div>
           <div className="flex items-center space-x-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -1013,13 +1005,9 @@ export default function TicketPage() {
         </motion.div>
 
         {/* Tickets Table */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-        >
+        <div>
           <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
-            <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 border-b border-blue-100">
+            <CardHeader className="bg-gradient-to-r from-slate-50 to-gray-50 border-b border-slate-200 py-3">
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center text-white">
@@ -1148,12 +1136,12 @@ export default function TicketPage() {
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
-                    <TableRow className="hover:bg-muted/50 border-b-2 border-slate-200">
+                    <TableRow className="bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100">
                       {headers.map(({ label, key }) => (
                         <TableHead
                           key={key}
                           className={`text-center font-semibold py-4 px-6 ${
-                            key !== "actions" ? "cursor-pointer hover:bg-muted/50" : ""
+                            key !== "actions" ? "cursor-pointer hover:bg-blue-50 transition-colors duration-200" : ""
                           }`}
                           onClick={() => {
                             if (key === "actions") return;
@@ -1166,24 +1154,19 @@ export default function TicketPage() {
                             setCurrentPage(1);
                           }}
                         >
-                          <div className="flex items-center justify-center space-x-1">
-                            <span>{label}</span>
+                          <div className="flex items-center justify-center space-x-2">
+                            <span className="text-slate-700">{label}</span>
                             {key !== "actions" && (
-                              <div className="flex flex-col">
-                                <span className={`text-xs leading-none ${
-                                  sortField === key && sortOrder === "asc"
-                                    ? "text-foreground"
-                                    : "text-muted-foreground"
-                                }`}>
-                                  ▲
-                                </span>
-                                <span className={`text-xs leading-none ${
-                                  sortField === key && sortOrder === "desc"
-                                    ? "text-foreground"
-                                    : "text-muted-foreground"
-                                }`}>
-                                  ▼
-                                </span>
+                              <div className="flex items-center">
+                                {sortField === key ? (
+                                  sortOrder === "asc" ? (
+                                    <ArrowUp className="h-4 w-4 text-blue-600 transition-colors duration-200" />
+                                  ) : (
+                                    <ArrowDown className="h-4 w-4 text-blue-600 transition-colors duration-200" />
+                                  )
+                                ) : (
+                                  <ArrowUpDown className="h-4 w-4 text-slate-400 transition-colors duration-200" />
+                                )}
                               </div>
                             )}
                           </div>
@@ -1447,7 +1430,7 @@ export default function TicketPage() {
               )}
             </CardContent>
           </Card>
-        </motion.div>
+        </div>
 
         {/* Chat Modal */}
         <Dialog open={isChatModalOpen} onOpenChange={setChatModalOpen}>

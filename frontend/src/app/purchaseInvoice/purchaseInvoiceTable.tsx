@@ -159,8 +159,8 @@ const paginatedInventory = sortedInventory.slice(
   const fetchData = async () => {
     try {
       const [inventoryRes, paymentsRes] = await Promise.all([
-        axios.get("http://192.168.29.167:8000/inventory"),
-        axios.get("http://192.168.29.167:8000/vendor-payment"),
+        axios.get("http://localhost:8000/inventory"),
+        axios.get("http://localhost:8000/vendor-payment"),
       ]);
 
       const vendorPaymentsData = paymentsRes.data || [];
@@ -248,12 +248,12 @@ const paginatedInventory = sortedInventory.slice(
   };
 
   const fetchProducts = async () => {
-    const res = await axios.get("http://192.168.29.167:8000/products");
+    const res = await axios.get("http://localhost:8000/products");
     setProducts(res.data);
   };
 
   const fetchVendors = async () => {
-    const res = await axios.get("http://192.168.29.167:8000/vendors");
+    const res = await axios.get("http://localhost:8000/vendors");
     setVendors(res.data);
   };
 
@@ -345,12 +345,12 @@ const paginatedInventory = sortedInventory.slice(
 
       if (formData.id) {
         await axios.put(
-          `http://192.168.29.167:8000/inventory/${formData.id}`,
+          `http://localhost:8000/inventory/${formData.id}`,
           payload
         );
         setAlert({ type: "success", message: "Inventory updated!" });
       } else {
-        await axios.post("http://192.168.29.167:8000/inventory", payload);
+        await axios.post("http://localhost:8000/inventory", payload);
         setAlert({ type: "success", message: "Inventory created!" });
       }
 
@@ -365,7 +365,7 @@ const paginatedInventory = sortedInventory.slice(
 
   const handleDelete = async (id?: number) => {
     if (!id || !confirm("Delete this inventory item?")) return;
-    await axios.delete(`http://192.168.29.167:8000/inventory/${id}`);
+    await axios.delete(`http://localhost:8000/inventory/${id}`);
     fetchData();
   };
 
@@ -426,7 +426,7 @@ const paginatedInventory = sortedInventory.slice(
 
 
   return (
-    <div className="flex-1 p-4">
+    <div className="flex-1 p-4 bg-white min-h-screen">
       <AnimatePresence>
         {alert && (
           <motion.div
@@ -564,12 +564,12 @@ const paginatedInventory = sortedInventory.slice(
                 <TableCell className="text-center">
                   <div className="flex justify-center gap-2">
                     <Button
-                      variant="ghost"
                       size="sm"
+                      variant="outline"
                       onClick={() => openModal(inv)}
-                      className="text-blue-600 hover:text-blue-800"
+                      className="border-yellow-300 text-yellow-600 hover:bg-yellow-50 hover:border-yellow-400 hover:text-yellow-700 transition-colors duration-200"
                     >
-                      <PencilLine className="h-4 w-4" />
+                      <PencilLine className="h-3 w-3" />
                     </Button>
                     <Button
                       variant="ghost"

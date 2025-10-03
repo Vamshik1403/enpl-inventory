@@ -85,7 +85,7 @@ export default function ServiceContractTable() {
   const fetchContracts = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://192.168.29.167:8000/servicecontracts");
+      const response = await axios.get("http://localhost:8000/servicecontracts");
       setContracts(response.data);
       setError(null);
     } catch (err) {
@@ -98,7 +98,7 @@ export default function ServiceContractTable() {
 
   const fetchCustomers = async () => {
     try {
-      const response = await axios.get("http://192.168.29.167:8000/customers");
+      const response = await axios.get("http://localhost:8000/customers");
       setCustomers(response.data);
     } catch (err) {
       console.error("Error fetching customers:", err);
@@ -107,7 +107,7 @@ export default function ServiceContractTable() {
 
   const fetchSites = async () => {
     try {
-      const response = await axios.get("http://192.168.29.167:8000/sites");
+      const response = await axios.get("http://localhost:8000/sites");
       setSites(response.data);
     } catch (err) {
       console.error("Error fetching sites:", err);
@@ -158,7 +158,7 @@ export default function ServiceContractTable() {
 
   const handleAddContract = async () => {
     try {
-      const response = await axios.post("http://192.168.29.167:8000/servicecontracts", formData);
+      const response = await axios.post("http://localhost:8000/servicecontracts", formData);
       setContracts([...contracts, response.data]);
       setFormData({
         customerId: 0,
@@ -182,7 +182,7 @@ export default function ServiceContractTable() {
     if (!selectedContract) return;
 
     try {
-      const response = await axios.put(`http://192.168.29.167:8000/servicecontracts/${selectedContract.id}`, formData);
+      const response = await axios.put(`http://localhost:8000/servicecontracts/${selectedContract.id}`, formData);
       setContracts(contracts.map(contract => 
         contract.id === selectedContract.id ? response.data : contract
       ));
@@ -198,7 +198,7 @@ export default function ServiceContractTable() {
     if (!selectedContract) return;
 
     try {
-      await axios.delete(`http://192.168.29.167:8000/servicecontracts/${selectedContract.id}`);
+      await axios.delete(`http://localhost:8000/servicecontracts/${selectedContract.id}`);
       setContracts(contracts.filter(contract => contract.id !== selectedContract.id));
       setIsDeleteModalOpen(false);
       setSelectedContract(null);
@@ -435,18 +435,20 @@ export default function ServiceContractTable() {
                   <TableCell>
                     <div className="flex items-center space-x-2">
                       <Button
-                        variant="ghost"
                         size="sm"
+                        variant="outline"
                         onClick={() => openEditModal(contract)}
+                        className="border-yellow-300 text-yellow-600 hover:bg-yellow-50 hover:border-yellow-400 hover:text-yellow-700 transition-colors duration-200"
                       >
-                        <PencilLine className="h-4 w-4" />
+                        <PencilLine className="h-3 w-3" />
                       </Button>
                       <Button
-                        variant="ghost"
                         size="sm"
+                        variant="outline"
                         onClick={() => openDeleteModal(contract)}
+                        className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 hover:text-red-700 transition-colors duration-200"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3 w-3" />
                       </Button>
                     </div>
                   </TableCell>

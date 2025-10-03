@@ -46,7 +46,7 @@ const DepartmentTable: React.FC = () => {
   const fetchDepartments = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://192.168.29.167:8000/departments");
+      const response = await axios.get("http://localhost:8000/departments");
       setDepartments(response.data.reverse());
     } catch (error) {
       console.error("Error fetching departments:", error);
@@ -68,7 +68,7 @@ const DepartmentTable: React.FC = () => {
     }
 
     try {
-      await axios.post("http://192.168.29.167:8000/departments", formData);
+      await axios.post("http://localhost:8000/departments", formData);
       showAlert('success', 'Department added successfully!');
       setIsModalOpen(false);
       fetchDepartments();
@@ -87,7 +87,7 @@ const DepartmentTable: React.FC = () => {
 
     try {
       await axios.put(
-        `http://192.168.29.167:8000/departments/${formData.id}`,
+        `http://localhost:8000/departments/${formData.id}`,
         formData
       );
       showAlert('success', 'Department updated successfully!');
@@ -104,7 +104,7 @@ const DepartmentTable: React.FC = () => {
     async (id: number) => {
       if (window.confirm("Are you sure you want to delete this department?")) {
         try {
-          await axios.delete(`http://192.168.29.167:8000/departments/${id}`);
+          await axios.delete(`http://localhost:8000/departments/${id}`);
           showAlert('success', 'Department deleted successfully!');
           fetchDepartments();
         } catch (error) {
@@ -202,15 +202,10 @@ const DepartmentTable: React.FC = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  <AnimatePresence>
-                    {departments.map((department, index) => (
-                      <motion.tr
+                    {departments.map((department) => (
+                      <TableRow
                         key={department.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.3, delay: index * 0.1 }}
-                        className="group hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200"
+                        className="group hover:bg-gray-50 transition-colors"
                       >
                         <TableCell className="text-center font-medium">
                           {department.id}
@@ -250,9 +245,8 @@ const DepartmentTable: React.FC = () => {
                             </motion.div>
                           </div>
                         </TableCell>
-                      </motion.tr>
+                      </TableRow>
                     ))}
-                  </AnimatePresence>
                 </TableBody>
               </Table>
             </div>

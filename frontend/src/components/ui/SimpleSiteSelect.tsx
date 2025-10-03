@@ -28,7 +28,7 @@ export function SimpleSiteSelect({
   React.useEffect(() => {
     async function fetchSites() {
       try {
-        const res = await fetch("http://192.168.29.167:8000/sites");
+        const res = await fetch("http://localhost:8000/sites");
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
         }

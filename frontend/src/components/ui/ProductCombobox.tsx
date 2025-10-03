@@ -42,7 +42,7 @@ export function ProductCombobox({
   React.useEffect(() => {
     async function fetchProducts() {
       try {
-        const res = await fetch("http://192.168.29.167:8000/products");
+        const res = await fetch("http://localhost:8000/products");
         const data = await res.json();
         setProducts(data);
       } catch (error) {

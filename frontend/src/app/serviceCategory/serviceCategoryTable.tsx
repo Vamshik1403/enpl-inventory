@@ -42,7 +42,7 @@ const ServiceCategoryTable: React.FC = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("http://192.168.29.167:8000/servicecategory");
+      const response = await axios.get("http://localhost:8000/servicecategory");
       setCategories(response.data.reverse());
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -52,7 +52,7 @@ const ServiceCategoryTable: React.FC = () => {
   const handleDelete = async (id: number) => {
     if (window.confirm("Are you sure you want to delete this category?")) {
       try {
-        await axios.delete(`http://192.168.29.167:8000/servicecategory/${id}`);
+        await axios.delete(`http://localhost:8000/servicecategory/${id}`);
         setAlert({ type: 'success', message: 'Category deleted successfully!' });
         fetchCategories();
       } catch (error) {
@@ -70,7 +70,7 @@ const ServiceCategoryTable: React.FC = () => {
       return;
     }
     try {
-      await axios.post("http://192.168.29.167:8000/servicecategory", {
+      await axios.post("http://localhost:8000/servicecategory", {
         serviceCatId: formData.serviceCatId,
         categoryName: formData.categoryName,
         subCategories: formData.subCategories,
@@ -88,7 +88,7 @@ const ServiceCategoryTable: React.FC = () => {
     if (!selectedCategory) return;
 
     try {
-      await axios.put(`http://192.168.29.167:8000/servicecategory/${selectedCategory.id}`, {
+      await axios.put(`http://localhost:8000/servicecategory/${selectedCategory.id}`, {
         serviceCatId: formData.serviceCatId,
         categoryName: formData.categoryName,
         subCategories: formData.subCategories,
@@ -139,13 +139,8 @@ const ServiceCategoryTable: React.FC = () => {
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
   return (
-    <div className="flex-1 p-6 bg-gray-50 min-h-screen">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-7xl mx-auto"
-      >
+    <div className="flex-1 p-6 bg-white min-h-screen">
+      <div className="max-w-7xl mx-auto">
         <div className="mb-6 bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="px-6 py-4 border-b border-gray-200">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
@@ -256,19 +251,19 @@ const ServiceCategoryTable: React.FC = () => {
                                   });
                                   setIsUpdateModalOpen(true);
                                 }}
-                                variant="ghost"
                                 size="sm"
-                                className="hover:bg-blue-50 hover:text-blue-600 transition-all duration-200"
+                                variant="outline"
+                                className="border-yellow-300 text-yellow-600 hover:bg-yellow-50 hover:border-yellow-400 hover:text-yellow-700 transition-colors duration-200"
                               >
-                                <Edit className="h-4 w-4" />
+                                <Edit className="h-3 w-3" />
                               </Button>
                               <Button
                                 onClick={() => handleDelete(category.id)}
-                                variant="ghost"
                                 size="sm"
-                                className="hover:bg-red-50 hover:text-red-600 transition-all duration-200"
+                                variant="outline"
+                                className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 hover:text-red-700 transition-colors duration-200"
                               >
-                                <Trash2 className="h-4 w-4" />
+                                <Trash2 className="h-3 w-3" />
                               </Button>
                             </div>
                           </TableCell>
@@ -444,7 +439,7 @@ const ServiceCategoryTable: React.FC = () => {
             </div>
           </DialogContent>
         </Dialog>
-      </motion.div>
+      </div>
     </div>
   );
 };
